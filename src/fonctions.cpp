@@ -18,8 +18,8 @@ double flux(double E){//energy en Mev
 
 double sigma (double E){
     double energy_positron=E-(mass_neutron-mass_proton);
-    double moment_positron=sqrt(pow(energy_positron,2)-pow(mass_proton,2));
-    return 0.0952*pow(10,-0)*energy_positron*mass_positron;
+    double moment_positron=sqrt(pow(energy_positron,2)-pow(mass_positron,2));
+    return 0.0952*pow(10,-0)*energy_positron*moment_positron;
 }
 /*
 double sin2_teta_12=0.32;
