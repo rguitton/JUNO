@@ -3,7 +3,7 @@
 
 double flux(double E);
 double probability();
-double sigma();
+double sigma (double E);
 
 
 #endif

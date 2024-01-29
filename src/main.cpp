@@ -11,8 +11,7 @@ int main()
     double tableau_spectra[size];
     double L=60;
     double energy;
-    double mass_neutron=939.565;
-    double mass_positron=0.510999;
+
 
     for (int i=0;i<size;i++){
         tableau_lenght[i]=double(i)*35/size;
@@ -22,7 +21,7 @@ int main()
         
         printf("Le flux correspondant vaut  %f \n",flux(energy));
         
-        tableau_spectra[i]=flux(energy)*(energy-mass_neutron+mass_positron);
+        tableau_spectra[i]=flux(energy)*sigma(energy);
         printf("Le spectre correspondant vaut  %f \n",tableau_spectra[i]);
     }
 
