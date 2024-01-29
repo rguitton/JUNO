@@ -3,7 +3,7 @@
 using namespace std;
 
 
-double flux(double E){
+double flux(double E){//energy en Mev 
     double phi;
     phi=0.58*exp(0.870-0.160*E-0.091*pow(E,2))
     +0.30*exp(0.896-0.239*E-0.0981*pow(E,2))
@@ -14,18 +14,20 @@ double flux(double E){
 
 
 double sigma (){
-    return 0.0952*pow(10,-42);
+    return 0.0952*pow(10,-0);
 }
 /*
 double sin2_teta_12=0.32;
 double sin2_teta_13=
 double sin2_teta_32=
 
-double delta_21=
-double delta_31=
-double delta_32=
+
+double delta_m21=
+double delta_m31=
+double delta_m32=
 */
 
 double probability(){
+
     return 1;
 }
