@@ -6,15 +6,36 @@ double mass_neutron=939.565;//Mev
 double mass_proton=938.272;//Mev
 double mass_positron=0.510999;
 
-double flux(double E){//energy en Mev 
+
+double flux_U_235(double E){
     double phi;
-    phi=0.58*exp(0.870-0.160*E-0.091*pow(E,2))
-    +0.30*exp(0.896-0.239*E-0.0981*pow(E,2))
-    +0.07*exp(0.976-0.162*E-0.0790*pow(E,2))
-    +0.05*exp(0.793-0.080*E-0.1085*pow(E,2));
+    phi=0.58*exp(0.870-0.160*E-0.091*pow(E,2));
     return phi;
 }
 
+double flux_U_238(double E){
+    double phi;
+    phi=0.30*exp(0.896-0.239*E-0.0981*pow(E,2));
+    return phi;
+}
+
+double flux_PU_239(double E){
+    double phi;
+    phi=0.07*exp(0.976-0.162*E-0.0790*pow(E,2));
+    return phi;
+}
+
+double flux_PU_241(double E){
+    double phi;
+    phi=0.05*exp(0.793-0.080*E-0.1085*pow(E,2));
+    return phi;
+}
+
+double flux(double E){
+    double phi;
+    phi=flux_U_235(E)+flux_U_238(E)+flux_PU_239(E)+flux_PU_241(E);
+    return phi;
+}
 
 double sigma (double E){
     double energy_positron=E-(mass_neutron-mass_proton);
