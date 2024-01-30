@@ -28,7 +28,7 @@ int main()
     double spectra_NH[size];
     double spectra_IH[size];
 
-    double L=60;
+    double L=53;//à changer 
     double energy;
 
 
@@ -67,22 +67,22 @@ int main()
     fprintf(gnuplotPipe1, "plot '-' with linespoints title 'Initial', '-' with linespoints title 'P21', '-' with linespoints title 'NH', '-' with linespoints title 'IH'\n");
 
     for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe1, "%lf %lf\n", tableau_lenght[i], spectra_initial[i]);
+        fprintf(gnuplotPipe1, "%g %g\n", tableau_lenght[i], spectra_initial[i]);
     }
     fprintf(gnuplotPipe1, "e\n");
 
     for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe1, "%lf %lf\n", tableau_lenght[i], spectra_p21[i]);
+        fprintf(gnuplotPipe1, "%g %g\n", tableau_lenght[i], spectra_p21[i]);
     }
     fprintf(gnuplotPipe1, "e\n");
 
     for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe1, "%lf %lf\n", tableau_lenght[i], spectra_NH[i]);
+        fprintf(gnuplotPipe1, "%g %g\n", tableau_lenght[i], spectra_NH[i]);
     }
     fprintf(gnuplotPipe1, "e\n");
 
     for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe1, "%lf %lf\n", tableau_lenght[i], spectra_IH[i]);
+        fprintf(gnuplotPipe1, "%g %g\n", tableau_lenght[i], spectra_IH[i]);
     }
     fprintf(gnuplotPipe1, "e\n");
         
@@ -96,47 +96,47 @@ int main()
 
     fprintf(gnuplotPipe2, "plot '-' with linespoints lt 3 title 'flux U 235', '-' with linespoints lt 4 title 'flux U 238', '-' with linespoints lt 1 title 'flux PU 239', '-' with linespoints lt 2 title 'flux PU 241', '-' with linespoints title 'cross section','-' with linespoints lt 3 title 'U235 product','-' with linespoints lt 4 title 'U238 product','-' with linespoints lt 1 title 'PU239 product','-' with linespoints lt 2 title 'PU241 product'\n");
     for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%lf %lf\n",tableau_energy[i], tab_flux_U_235[i]);
+        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_U_235[i]);
     }
     fprintf(gnuplotPipe2, "e\n");
 
     for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%lf %lf\n",tableau_energy[i], tab_flux_U_238[i]);
+        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_U_238[i]);
     }
     fprintf(gnuplotPipe2, "e\n");
 
     for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%lf %lf\n",tableau_energy[i], tab_flux_PU_239[i]);
+        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_PU_239[i]);
     }
     fprintf(gnuplotPipe2, "e\n");
 
     for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%lf %lf\n",tableau_energy[i], tab_flux_PU_241[i]);
+        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_PU_241[i]);
     }
     fprintf(gnuplotPipe2, "e\n");
     
     for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%lf %lf\n",tableau_energy[i], tab_cross[i]);
+        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_cross[i]);
     }
     fprintf(gnuplotPipe2, "e\n");
     
     for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%lf %lf\n",tableau_energy[i], tab_flux_cross_U_235[i]);
+        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_cross_U_235[i]);
     }
     fprintf(gnuplotPipe2, "e\n");
 
     for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%lf %lf\n",tableau_energy[i], tab_flux_cross_U_238[i]);
+        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_cross_U_238[i]);
     }
     fprintf(gnuplotPipe2, "e\n");
 
     for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%lf %lf\n",tableau_energy[i], tab_flux_cross_PU_239[i]);
+        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_cross_PU_239[i]);
     }
     fprintf(gnuplotPipe2, "e\n");
 
     for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%lf %lf\n",tableau_energy[i], tab_flux_cross_PU_241[i]);
+        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_cross_PU_241[i]);
     }
     fprintf(gnuplotPipe2, "e\n");
 
