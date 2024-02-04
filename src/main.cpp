@@ -93,8 +93,23 @@ int main()
         fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
         return 1;
     }
+    
+    fprintf(gnuplotPipe2, "set multiplot layout 2, 1\n");
+    fprintf(gnuplotPipe2, "set title 'Graphique avec Deux Échelles'\n");
+    fprintf(gnuplotPipe2, "set xlabel 'X'\n");
+    fprintf(gnuplotPipe2, "set xrange [0:9]\n");
 
-    fprintf(gnuplotPipe2, "plot '-' with linespoints lt 3 title 'flux U 235', '-' with linespoints lt 4 title 'flux U 238', '-' with linespoints lt 1 title 'flux PU 239', '-' with linespoints lt 2 title 'flux PU 241', '-' with linespoints title 'cross section','-' with linespoints lt 3 title 'U235 product','-' with linespoints lt 4 title 'U238 product','-' with linespoints lt 1 title 'PU239 product','-' with linespoints lt 2 title 'PU241 product'\n");
+    fprintf(gnuplotPipe2, "set ylabel 'Échelle de Gauche'\n");
+    fprintf(gnuplotPipe2, "set ytics nomirror\n");
+    fprintf(gnuplotPipe2, "set yrange [0:0.9]\n");
+
+    fprintf(gnuplotPipe2, "set y2label 'Échelle de Droite'\n");
+    fprintf(gnuplotPipe2, "set y2tics nomirror\n");
+    fprintf(gnuplotPipe2, "set y2range [0:5e-42]\n");
+
+    //fprintf(gnuplotPipe2, "plot '-' with linespoints lt 3 title 'flux U 235', '-' with linespoints lt 4 title 'flux U 238', '-' with linespoints lt 1 title 'flux PU 239', '-' with linespoints lt 2 title 'flux PU 241', '-' with linespoints axes x1y2 title 'cross section','-' with linespoints axes x1y2 lt 3 title 'U235 product','-' with linespoints axes x1y2 lt 4 title 'U238 product','-' with linespoints axes x1y2 lt 1 title 'PU239 product','-' with linespoints axes x1y2 lt 2 title 'PU241 product'\n");
+    fprintf(gnuplotPipe2, "plot '-' with linespoints lt 3 title 'flux U 235', '-' with linespoints lt 4 title 'flux U 238', '-' with linespoints lt 1 title 'flux PU 239', '-' with linespoints lt 2 title 'flux PU 241', '-' with linespoints axes x1y2 title 'cross section','-' with linespoints axes x1y2 lt 4 title 'U238 product'\n");
+
     for (int i = 0; i < size; i++) {
         fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_U_235[i]);
     }
@@ -115,13 +130,9 @@ int main()
     }
     fprintf(gnuplotPipe2, "e\n");
     
+
     for (int i = 0; i < size; i++) {
         fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_cross[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-    
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_cross_U_235[i]);
     }
     fprintf(gnuplotPipe2, "e\n");
 
@@ -129,6 +140,14 @@ int main()
         fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_cross_U_238[i]);
     }
     fprintf(gnuplotPipe2, "e\n");
+
+    /*
+    for (int i = 0; i < size; i++) {
+        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_cross_U_235[i]);
+    }
+    fprintf(gnuplotPipe2, "e\n");
+
+
 
     for (int i = 0; i < size; i++) {
         fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_cross_PU_239[i]);
@@ -140,6 +159,12 @@ int main()
     }
     fprintf(gnuplotPipe2, "e\n");
 
+    */    
+
+    fprintf(gnuplotPipe2, "set datafile separator ','\n plot '../data/fig_2_6.txt' using 1:2 with linespoints axes x1y1 title 'U235', '' using 3:4 with linespoints axes x1y1 title 'Pu239', '' using 5:6 with linespoints axes x1y1 title 'U238', '' using 7:8 with linespoints axes x1y1 title 'Pu241'\n");
+
+    fprintf(gnuplotPipe2, "unset multiplot\n");
+    fclose(gnuplotPipe2);
     fflush(gnuplotPipe2);
 
     // Attente de l'utilisateur avant de fermer la fenêtre Gnuplot
