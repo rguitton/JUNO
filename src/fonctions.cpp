@@ -40,7 +40,7 @@ double flux(double E){
 double sigma (double E){
     double energy_positron=E-(mass_neutron-mass_proton);
     double moment_positron=sqrt(pow(energy_positron,2)-pow(mass_positron,2));
-    return 0.0952e-42*energy_positron*moment_positron;
+    return 0.0952e-42*energy_positron*moment_positron;//e-42
 }
 
 double sin2_teta_12=0.32;
@@ -57,7 +57,7 @@ double delta2_m31_NH=delta2_m32+delta2_m21;
 double delta2_m31_IH=delta2_m32-delta2_m21;
 
 double probability(double E, char A, bool f){
-    double L=53e3;//à changer
+    double L=53e3;
     double P21=pow(cos(teta_13),4)*pow(sin(2*teta_12),2)*pow(sin(1.27*delta2_m21*L/E),2);
     if(f==0){ return 1-P21;}
     else {
