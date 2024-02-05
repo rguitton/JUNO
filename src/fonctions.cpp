@@ -75,3 +75,24 @@ double probability(double E, char A, bool f){
     }
     return 0;
 }
+double energy_positron(double E){
+    double energy_positron=E-(mass_neutron-mass_proton);
+    double moment_positron=sqrt(pow(energy_positron,2)-pow(mass_positron,2));
+
+    return energy_positron;
+}
+/*
+double neutrino_energy(double Evis){
+    double Ev=Evis+0.8; //d'après page 42 article 1
+    return Ev;
+}
+
+double integrale_spectre(double Evis, double Emin, double Emax,double n){
+    double E=neutrino_energy(Evis);
+
+    double h=(Emax-Emin)/n;
+    double result=0;
+    for (int i = 0; i < n; i++) {
+            result+=h*(probability(E)*sigma(E)*flux(E));}
+    return result;
+}*/

@@ -9,6 +9,8 @@ double flux_PU_241(double E);
 
 double probability(double L, char A, bool f);
 double sigma (double E);
+double visible_energy(double E);
+double energy_positron(double E);
 
 
 #endif
