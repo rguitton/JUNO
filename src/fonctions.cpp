@@ -85,14 +85,25 @@ double energy_positron(double E){
 double neutrino_energy(double Evis){
     double Ev=Evis+0.8; //d'après page 42 article 1
     return Ev;
-}
-
-double integrale_spectre(double Evis, double Emin, double Emax,double n){
-    double E=neutrino_energy(Evis);
-
-    double h=(Emax-Emin)/n;
-    double result=0;
-    for (int i = 0; i < n; i++) {
-            result+=h*(probability(E)*sigma(E)*flux(E));}
-    return result;
 }*/
+
+double integrale_spectre(double Emin, double Emax,double n){
+    double h = (Emax - Emin) / n;
+    double result = 0;
+
+    for (int i = 0; i < n-1; i++) {
+        double currentE = Emin + i * h;
+        double nextE = Emin + (i + 1) * h;
+
+        double prob1 = probability(currentE, 'N', 1);
+        double sigma1 = sigma(currentE);
+        double flux1 = flux(currentE);
+
+        double prob2 = probability(nextE, 'N', 1);
+        double sigma2 = sigma(nextE);
+        double flux2 = flux(nextE);
+
+        result += h * (prob1 * sigma1 * flux1 + prob2 * sigma2 * flux2) / 2;
+    }
+    return result;
+}

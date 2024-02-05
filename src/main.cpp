@@ -235,12 +235,12 @@ double tableau_energy_visible[size];
     fprintf(gnuplotPipe4, "plot '-' with linespoints title 'NH','-' with linespoints title 'IH'\n");
 
     for (int i = 0; i < size; i++) {    
-        fprintf(gnuplotPipe4, "%g %g\n", tableau_energy_visible[i], Np*spectra_NH_dep[i]/(20e3));
+        fprintf(gnuplotPipe4, "%g %g\n", tableau_energy_visible[i], Np*spectra_NH_dep[i]/(0.02));
     }
     fprintf(gnuplotPipe4, "e\n");
 
     for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe4, "%g %g\n", tableau_energy_visible[i], Np*spectra_IH_dep[i]/(20e3));
+        fprintf(gnuplotPipe4, "%g %g\n", tableau_energy_visible[i], Np*spectra_IH_dep[i]/(0.02));
     }
     fprintf(gnuplotPipe4, "e\n");
         
@@ -248,7 +248,8 @@ double tableau_energy_visible[size];
     fflush(gnuplotPipe4);
 
 
-
+    //recherche du 83
+    printf("il y a %g event par jour \n", Np*integrale_spectre(5.0,25.0,1000)*3600*24);
     // Attente de l'utilisateur avant de fermer la fenêtre Gnuplot
     printf("Appuyez sur Entrée pour fermer le graphique...\n");
     getchar();
