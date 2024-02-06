@@ -246,32 +246,20 @@ double tableau_energy_visible[size];
         
     
     fflush(gnuplotPipe4);
-/*
-    double  tab_flux_cross_U_235_spectre[size];
-    double  tab_flux_cross_U_238_spectre[size];
-    double  tab_flux_cross_PU_239_spectre[size];
-    double  tab_flux_cross_PU_241_spectre[size];
 
-    for(int i=0;i<size;i++){
-        tab_flux_cross_U_235_spectre[i]=tab_flux_cross_U_235[i]*probability(tableau_energy[i], 'I', 1);
-        tab_flux_cross_U_238_spectre[i]=tab_flux_cross_U_238[i]*probability(tableau_energy[i], 'I', 1);
-        tab_flux_cross_PU_239_spectre[i]=tab_flux_cross_PU_239[i]*probability(tableau_energy[i], 'I', 1);
-       tab_flux_cross_PU_239_spectre[i]=tab_flux_cross_PU_241[i]*probability(tableau_energy[i], 'I', 1);
-    } */
     double total_spectre[size];
     for(int i=0;i<size;i++){
-        total_spectre[i]=tab_flux_U_235[i]+tab_flux_U_238[i]+tab_flux_PU_239[i]+tab_flux_PU_241[i];
+        total_spectre[i]=flux(tableau_energy[i]);
     }
 
     double total_flux[size];
-    double denominator=(202.36*0.58+205.99*0.07+211.12*0.3+214.26*0.05)*1.602e-13;//conversion Mev en j
     for(int i=0;i<size;i++){
-        total_flux[i]=total_spectre[i]*36e9/denominator;
+        total_flux[i]=total_reactor_flux(total_spectre[i],36e9);
     }
     double total_spectre_final[size];
     for(int i=0;i<size;i++){
         //total_spectre_final[i]=total_flux[i]*sigma(tableau_energy[i])*probability(tableau_energy[i], 'I', 1);     
-        total_spectre_final[i]=total_flux[i]*1e-4*sigma(tableau_energy[i])*probability(tableau_energy[i], 'I', 1)/(4*3.14*pow(53e3,2));
+        total_spectre_final[i]=calcul_spectre(total_flux[i],tableau_energy[i]);
     }
 
     FILE *gnuplotPipe5 = popen("gnuplot -persist", "w");
@@ -279,9 +267,9 @@ double tableau_energy_visible[size];
         fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
         return 1;
     }
-    fprintf(gnuplotPipe5, "set title 'test'\n");
-    fprintf(gnuplotPipe5, "set xlabel ' energy [MeV]'\n");
-    fprintf(gnuplotPipe5, "set ylabel 'spectra'\n");
+    fprintf(gnuplotPipe5, "set title 'Spectre total en fonction de l énergie'\n");
+    fprintf(gnuplotPipe5, "set xlabel 'Antineutrino energy [MeV]'\n");
+    fprintf(gnuplotPipe5, "set ylabel 'Nombre d antineutrinos émis par seconde'\n");
 
     fprintf(gnuplotPipe5, "plot '-' with linespoints title 'IH'\n");
 
