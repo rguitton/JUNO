@@ -170,12 +170,9 @@ int main()
 
 //Figure 5 article 2
 //The kinetic energy of the positron, together with the typically two 0.511 MeV annihilation photons, is assumed to be fully deposited in the detector article 2 p 1515 and is defined as Edep.
-double spectra_NH_dep[size];
-double spectra_IH_dep[size];
-double tableau_energy_deposited[size];
-double Np=1.44e33;
- for (int i=0;i<size;i++){
-        tableau_energy_deposited[i]=energy_positron(tableau_energy[i])+2*0.511;
+/*
+
+ 
         spectra_NH_dep[i]=flux(tableau_energy_deposited[i])*sigma(tableau_energy_deposited[i])*probability(tableau_energy_deposited[i], 'N', 1);
         spectra_IH_dep[i]=flux(tableau_energy_deposited[i])*sigma(tableau_energy_deposited[i])*probability(tableau_energy_deposited[i], 'I', 1);
  }
@@ -184,6 +181,28 @@ double Np=1.44e33;
         spectra_NH_dep[i]*=3600*24*365*6;
         spectra_IH_dep[i]*=3600*24*365*6;
  }
+ */
+
+    double tableau_energy_deposited[size];
+    double Np=1.44e33;
+    for (int i=0;i<size;i++){
+        tableau_energy_deposited[i]=energy_positron(tableau_energy[i])+2*0.511;
+        printf("le spectre vaut %g \n",tableau_energy_deposited[i]);}
+    
+    double flux_per_fission_dep[size];
+    for(int i=0;i<size;i++){
+        flux_per_fission_dep[i]=flux(tableau_energy_deposited[i]);
+    }
+
+    double flux_total_dep[size];
+    for(int i=0;i<size;i++){
+        flux_total_dep[i]=total_reactor_flux(flux_per_fission_dep[i],36e9);
+    }
+    double spectre_final_dep[size];
+    for(int i=0;i<size;i++){
+        //total_spectre_final[i]=total_flux[i]*sigma(tableau_energy[i])*probability(tableau_energy[i], 'I', 1);     
+        spectre_final_dep[i]=calcul_spectre(flux_total_dep[i],tableau_energy_deposited[i]);
+        }
     FILE *gnuplotPipe3 = popen("gnuplot -persist", "w");
     if (gnuplotPipe3 == NULL) {
         fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
@@ -193,57 +212,52 @@ double Np=1.44e33;
     fprintf(gnuplotPipe3, "set xlabel 'Deposited energy [MeV]'\n");
     fprintf(gnuplotPipe3, "set ylabel 'Events per 20 keV'\n");
 
-    fprintf(gnuplotPipe3, "plot '-' with linespoints title 'NH','-' with linespoints title 'IH'\n");
+    fprintf(gnuplotPipe3, "plot '-' with linespoints title 'NH'\n");
 
     for (int i = 0; i < size; i++) {    
-        fprintf(gnuplotPipe3, "%g %g\n", tableau_energy_deposited[i], Np*spectra_NH_dep[i]/(20e3));
+        fprintf(gnuplotPipe3, "%g %g\n", tableau_energy_deposited[i], Np*spectre_final_dep[i]/(20e3)*3600*24*365*6);
     }
     fprintf(gnuplotPipe3, "e\n");
 
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe3, "%g %g\n", tableau_energy_deposited[i], Np*spectra_IH_dep[i]/(20e3));
-    }
-    fprintf(gnuplotPipe3, "e\n");
-        
-    
     fflush(gnuplotPipe3);
 
     //Figure 4 article 2
 //Evis ≃ E − 0.8MeV. p36 article 1
-double spectra_NH_vis[size];
-double spectra_IH_vis[size];
-double tableau_energy_visible[size];
- for (int i=0;i<size;i++){
-        tableau_energy_visible[i]=tableau_energy[i]-0.8;
-        spectra_NH_vis[i]=flux(tableau_energy_visible[i])*sigma(tableau_energy_visible[i])*probability(tableau_energy_visible[i], 'N', 1);
-        spectra_IH_vis[i]=flux(tableau_energy_visible[i])*sigma(tableau_energy_visible[i])*probability(tableau_energy_visible[i], 'I', 1);
- }
-// sur 1 jour
- for (int i=0;i<size;i++){
-        spectra_NH_vis[i]*=3600*24;
-        spectra_IH_vis[i]*=3600*24;
- }
+
+    double tableau_energy_vis[size];
+    for (int i=0;i<size;i++){
+        tableau_energy_vis[i]=energy_positron(tableau_energy[i])+2*0.511;}
+    
+    double flux_per_fission_vis[size];
+    for(int i=0;i<size;i++){
+        flux_per_fission_vis[i]=flux(tableau_energy_vis[i]);
+    }
+
+    double flux_total_vis[size];
+    for(int i=0;i<size;i++){
+        flux_total_vis[i]=total_reactor_flux(flux_per_fission_vis[i],36e9);
+    }
+    double spectre_final_vis[size];
+    for(int i=0;i<size;i++){
+        //total_spectre_final[i]=total_flux[i]*sigma(tableau_energy[i])*probability(tableau_energy[i], 'I', 1);     
+        spectre_final_vis[i]=calcul_spectre(flux_total_vis[i],tableau_energy_vis[i]);
+        }
     FILE *gnuplotPipe4 = popen("gnuplot -persist", "w");
     if (gnuplotPipe4 == NULL) {
         fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
         return 1;
     }
     fprintf(gnuplotPipe4, "set title 'Juno 1 day data datking'\n");
-    fprintf(gnuplotPipe4, "set xlabel 'Deposited energy [MeV]'\n");
+    fprintf(gnuplotPipe4, "set xlabel 'visible energy [MeV]'\n");
     fprintf(gnuplotPipe4, "set ylabel 'Events/0.02 [Mev^-1.Day^-1]'\n");
 
-    fprintf(gnuplotPipe4, "plot '-' with linespoints title 'NH','-' with linespoints title 'IH'\n");
+    fprintf(gnuplotPipe4, "plot '-' with linespoints title 'NH'\n");
 
     for (int i = 0; i < size; i++) {    
-        fprintf(gnuplotPipe4, "%g %g\n", tableau_energy_visible[i], Np*spectra_NH_dep[i]/(0.02));
+        fprintf(gnuplotPipe4, "%g %g\n", tableau_energy_vis[i], Np*spectre_final_vis[i]/(0.02));
     }
     fprintf(gnuplotPipe4, "e\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe4, "%g %g\n", tableau_energy_visible[i], Np*spectra_IH_dep[i]/(0.02));
-    }
-    fprintf(gnuplotPipe4, "e\n");
-        
+    
     
     fflush(gnuplotPipe4);
 
