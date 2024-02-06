@@ -1,5 +1,6 @@
 #include "fonctions.h"
 #include <math.h>
+
 using namespace std;
 
 double mass_neutron=939.565;//MeV
@@ -127,6 +128,6 @@ double total_reactor_flux(double tab_flux, double reactor_power){
 }
 
 double calcul_spectre(double tab_flux,double energy){
-    double spectre=tab_flux*sigma(energy)*probability(energy, 'I', 1)/(4*3.14*pow(53e3,2));
+    double spectre=tab_flux*sigma(energy)*probability(energy, 'I', 1)/(4*M_PI*pow(53e3,2));//on divise par 4*pi*L^2
     return spectre;
 }
