@@ -15,13 +15,13 @@ double flux_U_235(double E){
 
 double flux_U_238(double E){
     double phi;
-    phi=0.3*exp(0.896-0.239*E-0.0981*pow(E,2));
+    phi=0.07*exp(0.896-0.239*E-0.0981*pow(E,2));
     return phi;
 }
 
 double flux_PU_239(double E){
     double phi;
-    phi=0.07*exp(0.976-0.162*E-0.0790*pow(E,2));
+    phi=0.3*exp(0.976-0.162*E-0.0790*pow(E,2));
     return phi;
 }
 
@@ -38,7 +38,7 @@ double flux(double E){
 }
 
 double sigma (double E){
-    double energy_positron=E-(mass_neutron-mass_proton);
+    double energy_positron=E-(mass_neutron-mass_proton);//Mev
     double moment_positron=sqrt(pow(energy_positron,2)-pow(mass_positron,2));
     return 0.0952e-42*energy_positron*moment_positron;//e-42
 }
@@ -88,22 +88,28 @@ double neutrino_energy(double Evis){
 }*/
 
 double integrale_spectre(double Emin, double Emax,double n){
-    double h = (Emax - Emin) / n;
-    double result = 0;
+    double h=(Emax-Emin)/n;
+    double result=0;
 
-    for (int i = 0; i < n-1; i++) {
-        double currentE = Emin + i * h;
-        double nextE = Emin + (i + 1) * h;
+    for(int i=0;i<n;i++){
+        double currentE=Emin+i*h;
+        double nextE=Emin+(i+1)*h;
 
-        double prob1 = probability(currentE, 'N', 1);
-        double sigma1 = sigma(currentE);
-        double flux1 = flux(currentE);
+        double prob1=probability(currentE, 'N', 1);
+        double sigma1=sigma(currentE);
+        double flux1=total_reactor_flux(flux(currentE),36e3);
 
-        double prob2 = probability(nextE, 'N', 1);
-        double sigma2 = sigma(nextE);
-        double flux2 = flux(nextE);
+        double prob2=probability(nextE, 'N', 1);
+        double sigma2=sigma(nextE);
+        double flux2=total_reactor_flux(flux(nextE),36e3);
 
-        result += h * (prob1 * sigma1 * flux1 + prob2 * sigma2 * flux2) / 2;
+        result += h*(prob1*sigma1*flux1 + prob2*sigma2*flux2)/2;
     }
     return result;
+}
+//use power in MeV
+double total_reactor_flux(double flux, double power){
+    double denominator=202.36*0.58+205.99*0.3+211.12*0.07+214.26*0.05;
+    double total_flux=power/denominator*flux;
+    return total_flux;
 }

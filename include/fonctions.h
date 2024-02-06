@@ -11,6 +11,8 @@ double probability(double L, char A, bool f);
 double sigma (double E);
 double visible_energy(double E);
 double energy_positron(double E);
+double integrale_spectre(double Emin, double Emax,double n);
+double total_reactor_flux(double flux, double power);
 
 
 #endif
