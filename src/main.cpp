@@ -190,8 +190,8 @@ double Np=1.44e33;
         return 1;
     }
     fprintf(gnuplotPipe3, "set title 'Juno 6 years data datking'\n");
-    fprintf(gnuplotPipe2, "set xlabel 'Deposited energy [MeV]'\n");
-    fprintf(gnuplotPipe2, "set ylabel 'Events per 20 keV'\n");
+    fprintf(gnuplotPipe3, "set xlabel 'Deposited energy [MeV]'\n");
+    fprintf(gnuplotPipe3, "set ylabel 'Events per 20 keV'\n");
 
     fprintf(gnuplotPipe3, "plot '-' with linespoints title 'NH','-' with linespoints title 'IH'\n");
 
@@ -246,10 +246,64 @@ double tableau_energy_visible[size];
         
     
     fflush(gnuplotPipe4);
+/*
+    double  tab_flux_cross_U_235_spectre[size];
+    double  tab_flux_cross_U_238_spectre[size];
+    double  tab_flux_cross_PU_239_spectre[size];
+    double  tab_flux_cross_PU_241_spectre[size];
 
+    for(int i=0;i<size;i++){
+        tab_flux_cross_U_235_spectre[i]=tab_flux_cross_U_235[i]*probability(tableau_energy[i], 'I', 1);
+        tab_flux_cross_U_238_spectre[i]=tab_flux_cross_U_238[i]*probability(tableau_energy[i], 'I', 1);
+        tab_flux_cross_PU_239_spectre[i]=tab_flux_cross_PU_239[i]*probability(tableau_energy[i], 'I', 1);
+       tab_flux_cross_PU_239_spectre[i]=tab_flux_cross_PU_241[i]*probability(tableau_energy[i], 'I', 1);
+    } */
+    double total_spectre[size];
+    for(int i=0;i<size;i++){
+        total_spectre[i]=tab_flux_U_235[i]+tab_flux_U_238[i]+tab_flux_PU_239[i]+tab_flux_PU_241[i];
+    }
+
+    double total_flux[size];
+    double denominator=(202.36*0.58+205.99*0.07+211.12*0.3+214.26*0.05)*1.602e-13;//conversion Mev en j
+    for(int i=0;i<size;i++){
+        total_flux[i]=total_spectre[i]*36e9/denominator;
+    }
+    double total_spectre_final[size];
+    for(int i=0;i<size;i++){
+        //total_spectre_final[i]=total_flux[i]*sigma(tableau_energy[i])*probability(tableau_energy[i], 'I', 1);     
+        total_spectre_final[i]=total_flux[i]*1e-4*sigma(tableau_energy[i])*probability(tableau_energy[i], 'I', 1)/(4*3.14*pow(53e3,2));
+    }
+
+    FILE *gnuplotPipe5 = popen("gnuplot -persist", "w");
+    if (gnuplotPipe5 == NULL) {
+        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
+        return 1;
+    }
+    fprintf(gnuplotPipe5, "set title 'test'\n");
+    fprintf(gnuplotPipe5, "set xlabel ' energy [MeV]'\n");
+    fprintf(gnuplotPipe5, "set ylabel 'spectra'\n");
+
+    fprintf(gnuplotPipe5, "plot '-' with linespoints title 'IH'\n");
+
+    for (int i = 0; i < size; i++) {    
+        fprintf(gnuplotPipe5, "%g %g\n", tableau_energy[i],total_spectre_final[i]*Np*3600*24);
+    }
+    fprintf(gnuplotPipe5, "e\n");
+    fflush(gnuplotPipe5);
+
+
+    double result=0;
+    double h=tableau_energy[10]-tableau_energy[9];
+    for(int i=0;i<size-1;i++){
+        if(tableau_energy[i]>1.8&&tableau_energy[i]<12){//cf article 2
+        result += h*(total_spectre_final[i] + total_spectre_final[i+1])/2;}
+        
+    }
 
     //recherche du 83
-    printf("il y a %g event par jour \n", Np*integrale_spectre(5.0,25.0,1000)*3600*24);
+    //printf("il y a %g event par jour \n", Np*integrale_spectre(5.0,25.0,1000)*3600*24);
+    printf("il y a %g event par jour \n", Np*result*3600*24);
+
     // Attente de l'utilisateur avant de fermer la fenêtre Gnuplot
     printf("Appuyez sur Entrée pour fermer le graphique...\n");
     getchar();
@@ -259,6 +313,7 @@ double tableau_energy_visible[size];
     fclose(gnuplotPipe2);
     fclose(gnuplotPipe3);
     fclose(gnuplotPipe4);
+    fclose(gnuplotPipe5);
 
     return 0;
 }
