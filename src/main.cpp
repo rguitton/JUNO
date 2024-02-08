@@ -17,6 +17,11 @@ int main()
     double tab_flux_cross_PU_239[size];
     double tab_flux_cross_PU_241[size];
 
+    double fission_fraction_U_235=0.58;//MeV
+    double fission_fraction_U_238=0.07;//MeV
+    double fission_fraction_PU_239=0.30;//MeV
+    double fission_fraction_PU_241=0.05;//MeV
+    
     double tab_flux_U_235[size];
     double tab_flux_U_238[size];
     double tab_flux_PU_239[size];
@@ -44,10 +49,10 @@ int main()
         spectra_NH[i]=flux(energy)*sigma(energy)*probability(energy, 'N', 1);
         spectra_IH[i]=flux(energy)*sigma(energy)*probability(energy, 'I', 1);
 
-        tab_flux_U_235[i]=flux_U_235(tableau_energy[i]);
-        tab_flux_U_238[i]=flux_U_238(tableau_energy[i]);
-        tab_flux_PU_239[i]=flux_PU_239(tableau_energy[i]);
-        tab_flux_PU_241[i]=flux_PU_241(tableau_energy[i]);
+        tab_flux_U_235[i]=fission_fraction_U_235*flux_U_235(tableau_energy[i]);
+        tab_flux_U_238[i]=fission_fraction_U_238*flux_U_238(tableau_energy[i]);
+        tab_flux_PU_239[i]=fission_fraction_PU_239*flux_PU_239(tableau_energy[i]);
+        tab_flux_PU_241[i]=fission_fraction_PU_241*flux_PU_241(tableau_energy[i]);
 
         tab_cross[i]=sigma(tableau_energy[i]);
 
@@ -108,7 +113,7 @@ int main()
     fprintf(gnuplotPipe2, "set y2label 'Cross section(cm^-2)'\n");
     fprintf(gnuplotPipe2, "set y2tics nomirror\n");
     fprintf(gnuplotPipe2, "set y2range [0:5e-42]\n");
-
+    
     //fprintf(gnuplotPipe2, "plot '-' with linespoints lt 3 title 'flux U 235', '-' with linespoints lt 4 title 'flux U 238', '-' with linespoints lt 1 title 'flux PU 239', '-' with linespoints lt 2 title 'flux PU 241', '-' with linespoints axes x1y2 title 'cross section','-' with linespoints axes x1y2 lt 3 title 'U235 product','-' with linespoints axes x1y2 lt 4 title 'U238 product','-' with linespoints axes x1y2 lt 1 title 'PU239 product','-' with linespoints axes x1y2 lt 2 title 'PU241 product'\n");
     fprintf(gnuplotPipe2, "plot '-' with linespoints lt 3 title 'flux U 235', '-' with linespoints lt 4 title 'flux U 238', '-' with linespoints lt 1 title 'flux PU 239', '-' with linespoints lt 2 title 'flux PU 241', '-' with linespoints axes x1y2 title 'cross section','-' with linespoints axes x1y2 lt 4 title 'U238 product'\n");
 
@@ -162,6 +167,7 @@ int main()
     fprintf(gnuplotPipe2, "e\n");
 
     */    
+    
     fprintf(gnuplotPipe2, "set title 'Donnée de l article'\n");
     fprintf(gnuplotPipe2, "set datafile separator ','\n plot '../data/fig_2_6.txt' using 1:2 with linespoints axes x1y1 title 'U235', '' using 3:4 with linespoints axes x1y1 title 'Pu239', '' using 5:6 with linespoints axes x1y1 title 'U238', '' using 7:8 with linespoints axes x1y1 title 'Pu241'\n");
 
@@ -186,8 +192,8 @@ int main()
     double tableau_energy_deposited[size];
     double Np=1.44e33;
     for (int i=0;i<size;i++){
-        tableau_energy_deposited[i]=energy_positron(tableau_energy[i])+2*0.511;
-        printf("le spectre vaut %g \n",tableau_energy_deposited[i]);}
+        tableau_energy_deposited[i]=energy_positron(tableau_energy[i])+2*0.511;}
+        //printf("le spectre vaut %g \n",tableau_energy_deposited[i]);}
     
     double flux_per_fission_dep[size];
     for(int i=0;i<size;i++){
@@ -212,10 +218,10 @@ int main()
     fprintf(gnuplotPipe3, "set xlabel 'Deposited energy [MeV]'\n");
     fprintf(gnuplotPipe3, "set ylabel 'Events per 20 keV'\n");
 
-    fprintf(gnuplotPipe3, "plot '-' with linespoints title 'NH'\n");
+    fprintf(gnuplotPipe3, "plot '-' with linespoints title 'IH'\n");
 
     for (int i = 0; i < size; i++) {    
-        fprintf(gnuplotPipe3, "%g %g\n", tableau_energy_deposited[i], Np*spectre_final_dep[i]/(20e3)*3600*24*365*6);
+        fprintf(gnuplotPipe3, "%g %g\n", tableau_energy_deposited[i], Np*spectre_final_dep[i]*3600*24*365*6);
     }
     fprintf(gnuplotPipe3, "e\n");
 
@@ -226,8 +232,8 @@ int main()
 
     double tableau_energy_vis[size];
     for (int i=0;i<size;i++){
-        tableau_energy_vis[i]=energy_positron(tableau_energy[i])+2*0.511;}
-    
+        tableau_energy_vis[i]=tableau_energy[i]-0.8;}
+            
     double flux_per_fission_vis[size];
     for(int i=0;i<size;i++){
         flux_per_fission_vis[i]=flux(tableau_energy_vis[i]);
@@ -242,6 +248,23 @@ int main()
         //total_spectre_final[i]=total_flux[i]*sigma(tableau_energy[i])*probability(tableau_energy[i], 'I', 1);     
         spectre_final_vis[i]=calcul_spectre(flux_total_vis[i],tableau_energy_vis[i]);
         }
+    /*
+    double event_per_10kev[size];
+    double energy_per_10kev[size];
+
+    double Emin=tableau_energy_vis[0];
+    for(int i=0;i<size;i++){
+        int u=0;
+        double Emax=tableau_energy_vis[i];
+        while(Emax-Emin<10e-3 && u<size){
+            double Emax=tableau_energy_vis[i+u];
+            u=u+1;
+            }
+        event_per_10kev[i]=(spectre_final_vis[i+u]+tableau_energy_vis[u])/2;
+        energy_per_10kev[i]= (Emax+Emin)/2;
+        i=u;
+        }
+    */
     FILE *gnuplotPipe4 = popen("gnuplot -persist", "w");
     if (gnuplotPipe4 == NULL) {
         fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
@@ -249,12 +272,14 @@ int main()
     }
     fprintf(gnuplotPipe4, "set title 'Juno 1 day data datking'\n");
     fprintf(gnuplotPipe4, "set xlabel 'visible energy [MeV]'\n");
-    fprintf(gnuplotPipe4, "set ylabel 'Events/0.02 [Mev^-1.Day^-1]'\n");
+    fprintf(gnuplotPipe4, "set ylabel 'Events'\n");
+    //fprintf(gnuplotPipe4, "set yrange [0:0.5]\n");
 
-    fprintf(gnuplotPipe4, "plot '-' with linespoints title 'NH'\n");
+
+    fprintf(gnuplotPipe4, "plot '-' with linespoints title 'IH'\n");
 
     for (int i = 0; i < size; i++) {    
-        fprintf(gnuplotPipe4, "%g %g\n", tableau_energy_vis[i], Np*spectre_final_vis[i]/(0.02));
+        fprintf(gnuplotPipe4, "%g %g\n", tableau_energy_vis[i], Np*spectre_final_vis[i]*3600*24);
     }
     fprintf(gnuplotPipe4, "e\n");
     
@@ -293,7 +318,11 @@ int main()
     fprintf(gnuplotPipe5, "e\n");
     fflush(gnuplotPipe5);
 
-
+    double *E_converted = convert_Evis(tableau_energy, size);
+    printf("Énergies converties :\n");
+    for (int i = 0; i < size/1000; i++) {
+        printf("%f\n", E_converted[i]);
+    }
     double IBD_initial=0;//par seconde
     double h=tableau_energy[10]-tableau_energy[9];
     for(int i=0;i<size-1;i++){
