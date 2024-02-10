@@ -142,18 +142,22 @@ double standart_dev(double E){
     return dev;
 }
 
-double gauss_pdf(double E, double Em)
+double gauss_pdf(double E, double Ei)
 {   
-    double mu=standart_dev(Em);
-	return 1.0 / (standart_dev(E) * sqrt(2.0 * M_PI)) * exp(-(pow((E - Em)/standart_dev(E), 2)/2.0));
+    double mu=standart_dev(E);
+	return 1.0 / (standart_dev(E) * sqrt(2.0 * M_PI)) * exp(-(pow((E-Ei)/standart_dev(E), 2)/2.0));
 }
 
-
-void convolve(double E1[], double E2[], double E3[], int lenE1, int lenE2){ //int* lenE3){
+/*
+double convolve(double E1[], double E2, int lenE1, int lenE2){ //int* lenE3){
     int nconv = lenE1 + lenE2 - 1;
     //(*lenE3) = nconv;
     int i, j, E1_start, E2_start, E2_end;
+    double E3;
+    double *new_E1 = (double*) malloc(size * sizeof(double));
 
+    for(int i = 0; i < size; i++){
+            new_E1[i] = gauss_pdf(E[i], E2-0.8);}
     // Pas besoin de réallouer E3 car il est passé en argument
     // double *E3 = (double*) calloc(nconv, sizeof(double));
 
@@ -168,7 +172,7 @@ void convolve(double E1[], double E2[], double E3[], int lenE1, int lenE2){ //in
         }
     }
     // Pas besoin de retourner E3 car il est passé par référence
-    // return E3;
+    return E3;
 }
 
 
@@ -178,16 +182,16 @@ double* convert_Evis(double E[], int size){
     printf("E[0] vaut %g \n", E[0]);
     printf("gauss de E[0] vaut %g \n", gauss_pdf(E[0], E[0]));
 
-    for(int u = 1; u < 2; u++){
+    for(int u = 0; u < 2; u++){
         double *new_E1 = (double*) malloc(size * sizeof(double));
         for(int i = 0; i < size; i++){
-            E1[i] = gauss_pdf(E[i], E[u]);
+            E1[i] = gauss_pdf(E[i]-0.8, E[u]-0.8);
             convolve(E, E1, new_E1, size, size); // Passer E1 et new_E1 par référence
             printf("i  vaut %d \n", i);
 
         }
         free(E1); // Free previously allocated memory.
-        E1 = new_E1;
+        E1[u] = new_E1[u];
     }
     return E1;
-}
+}*/
