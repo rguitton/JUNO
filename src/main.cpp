@@ -317,12 +317,12 @@ int main()
     }
     fprintf(gnuplotPipe5, "e\n");
     fflush(gnuplotPipe5);
-
+    /*
     double *E_converted = convert_Evis(tableau_energy, size);
     printf("Énergies converties :\n");
     for (int i = 0; i < size/1000; i++) {
         printf("%f\n", E_converted[i]);
-    }
+    }*/
     double IBD_initial=0;//par seconde
     double h=tableau_energy[10]-tableau_energy[9];
     for(int i=0;i<size-1;i++){
@@ -331,6 +331,35 @@ int main()
         
     }
     double IBD_detected_per_d=Np*IBD_initial*3600*24;
+
+    double new_spectre[size];
+    for(int u=0;u<size;u++){
+        new_spectre[u]=0;
+        for(int i = 0; i < size; i++){
+           //new_spectre[u] += spectre_final[i]*Np*3600*24*gauss_pdf(tableau_energy[u],tableau_energy[i]);
+           double product=gauss_pdf(tableau_energy[u],tableau_energy[i])*spectre_final[i];
+           if(product>0){
+                new_spectre[u] +=product;
+           }
+           
+    }printf("new_energy vaut %g\n",new_spectre[u]);
+           }
+        FILE *gnuplotPipe6 = popen("gnuplot -persist", "w");
+    if (gnuplotPipe6 == NULL) {
+        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
+        return 1;
+    }
+    fprintf(gnuplotPipe6, "set title 'Spectre des antineutrino detectés en fonction de l énergie visible'\n");
+    fprintf(gnuplotPipe6, "set xlabel 'Visible energy [MeV]'\n");
+    fprintf(gnuplotPipe6, "set ylabel 'Nombre d antineutrinos detectés par jour'\n");
+
+    fprintf(gnuplotPipe6, "plot '-' with linespoints title 'IH'\n");
+
+    for (int i = 0; i < size; i++) {    
+        fprintf(gnuplotPipe6, "%g %g\n", tableau_energy[i],new_spectre[i]*Np*3600*24);
+    }
+    fprintf(gnuplotPipe6, "e\n");
+    fflush(gnuplotPipe6);
     //recherche du 83
     //printf("il y a %g event par jour \n", Np*integrale_spectre(5.0,25.0,1000)*3600*24);
     printf("On peut s'attendre à %g détections par jour sans sélection \n", IBD_detected_per_d);
