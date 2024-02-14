@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/mnt/c/Users/Ordinateur/Desktop/TIPP/JUNO/build/../include
+CXX_INCLUDES = -I"/mnt/c/Users/TOUCHTE CODJO Felix/Desktop/TIPP/TIPP_Code/JUNO/build/../include"
 
 CXX_FLAGS = -g
 

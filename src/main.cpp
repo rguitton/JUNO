@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <cstdlib>
+#include <fstream>
+
+using namespace std;
 
 int main()
 {
@@ -28,6 +32,7 @@ int main()
     double tab_flux_PU_241[size];
 
 
+
     double spectra_initial[size];
     double spectra_p21[size];
     double spectra_NH[size];
@@ -36,10 +41,24 @@ int main()
     double L=53;//à changer 
     double energy;
 
+    // Définition/ouverture de fichiers utiles aux plots ROOT, format %g %g %g %g
+    // spectra
+    fstream file_spectra_initial; file_spectra_initial.open("../results/spectra_initial.txt",ios::out);
+    fstream file_spectra_p21; file_spectra_p21.open("../results/spectra_p21.txt",ios::out);
+    fstream file_spectra_NH; file_spectra_NH.open("../results/spectra_NH.txt",ios::out);
+    fstream file_spectra_IH; file_spectra_IH.open("../results/spectra_IH.txt",ios::out);
+    // flux
+    fstream file_flux_U_235; file_flux_U_235.open("../results/flux_U_235.txt",ios::out);
+    fstream file_flux_U_238; file_flux_U_238.open("../results/flux_U_238.txt",ios::out);
+    fstream file_flux_PU_239; file_flux_PU_239.open("../results/flux_PU_239.txt",ios::out);
+    fstream file_flux_PU_241; file_flux_PU_241.open("../results/flux_PU_241.txt",ios::out);
+    fstream file_flux_cross_U_238; file_flux_cross_U_238.open("../results/flux_cross_U_235.txt",ios::out);
+    fstream file_cross; file_cross.open("../results/cross.txt",ios::out);
+
 
     for (int i=0;i<size;i++){
         tableau_lenght[i]=5+double(i)*28/size;
-        tableau_energy[i]=1+double(i)*10/size;
+        tableau_energy[i]=1.81+double(i)*7.19/size;
     }
 
      for (int i=0;i<size;i++){
@@ -61,41 +80,40 @@ int main()
         tab_flux_cross_PU_239[i]=tab_cross[i]*tab_flux_PU_239[i]*pow(10,2);
         tab_flux_cross_PU_241[i]=tab_cross[i]*tab_flux_PU_241[i]*pow(10,2);
 
+        // Sauvegarde des données dans les fichiers .txt
+
+        // spectra fig2.4, art[1]
+        file_spectra_initial << tableau_lenght[i] << " " << spectra_initial[i] << " " << 0 << " " << 0 << endl;
+        file_spectra_p21 << tableau_lenght[i] << " " << spectra_p21[i] << " " << 0 << " " << 0 << endl;
+        file_spectra_NH << tableau_lenght[i] << " " << spectra_NH[i] << " " << 0 << " " << 0 << endl;
+        file_spectra_IH << tableau_lenght[i] << " " << spectra_IH[i] << " " << 0 << " " << 0 << endl;
+        // flux from reactor fig2.6, art[1]
+        file_flux_U_235 << tableau_energy[i] << " " << tab_flux_U_235[i] << " " << 0 << " "<< 0 << endl;
+        file_flux_U_238 << tableau_energy[i] << " " << tab_flux_U_238[i] << " " << 0 << " " << 0 << endl;
+        file_flux_PU_239 << tableau_energy[i] << " " << tab_flux_PU_239[i] << " " << 0 << " " << 0 << endl;
+        file_flux_PU_241 << tableau_energy[i] << " " << tab_flux_PU_241[i] << " " << 0 << " " << 0 << endl;
+        file_flux_cross_U_238 << tableau_energy[i] << " " << tab_flux_cross_U_238[i] << " " << 0 << " " << 0 << endl;
+        file_cross << tableau_energy[i] << " " << tab_cross[i] << " " << 0 << " " << 0 << endl;
+
     }
 
-   FILE *gnuplotPipe1 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe1 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
-    fprintf(gnuplotPipe1,"set title 'reactor antineutrino flux for different neutrino MHs'\n");
-    fprintf(gnuplotPipe1, "set xlabel 'L/E(km/MeV)'\n");
-    fprintf(gnuplotPipe1, "set ylabel 'Arbitrary unit'\n");
-    fprintf(gnuplotPipe1, "plot '-' with linespoints title 'Non oscillation', '-' with linespoints title 'theta_21', '-' with linespoints title 'NH', '-' with linespoints title 'IH'\n");
+    // Fermeture des fichiers
+    //spectra
+    file_spectra_initial.close();
+    file_spectra_p21.close();
+    file_spectra_NH.close();
+    file_spectra_IH.close();
+    //flux
+    file_flux_U_235.close();
+    file_flux_U_238.close();
+    file_flux_PU_239.close();
+    file_flux_PU_241.close();
+    file_flux_cross_U_238.close();
+    file_cross.close();
 
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe1, "%g %g\n", tableau_lenght[i], spectra_initial[i]);
-    }
-    fprintf(gnuplotPipe1, "e\n");
+    
 
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe1, "%g %g\n", tableau_lenght[i], spectra_p21[i]);
-    }
-    fprintf(gnuplotPipe1, "e\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe1, "%g %g\n", tableau_lenght[i], spectra_NH[i]);
-    }
-    fprintf(gnuplotPipe1, "e\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe1, "%g %g\n", tableau_lenght[i], spectra_IH[i]);
-    }
-    fprintf(gnuplotPipe1, "e\n");
-        
-    fflush(gnuplotPipe1);
-
-     FILE *gnuplotPipe2 = popen("gnuplot -persist", "w");
+    FILE *gnuplotPipe2 = popen("gnuplot -persist", "w");
     if (gnuplotPipe2 == NULL) {
         fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
         return 1;
@@ -375,11 +393,17 @@ int main()
     getchar();
 
     // Fermeture du pipe Gnuplot
-    fclose(gnuplotPipe1);
     fclose(gnuplotPipe2);
     fclose(gnuplotPipe3);
     fclose(gnuplotPipe4);
     fclose(gnuplotPipe5);
 
+    // Exécution des macros ROOT pour les plots
+    printf("####################################################\n\n");
+    printf("Current directory during the execution of main.cpp\n");
+    printf("\t");
+    system("pwd");
+    printf("\n");
+    system("root -q ../src/plotter_spectra.C");
     return 0;
 }
