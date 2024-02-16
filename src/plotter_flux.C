@@ -147,11 +147,11 @@ void plotter_flux(){
 	gPad->Update();
 
 	//spectre : cross*flux
-	TGraphErrors *g_cross_flux= new TGraphErrors("../results/flux_cross_U_235.txt");
-	g_cross_flux->SetMarkerStyle(1);
-	g_cross_flux->SetLineColor(kRed);
-	g_cross_flux->SetLineStyle(1);
-	g_cross_flux->Draw("L");
+	TGraphErrors *g_flux_cross_total= new TGraphErrors("../results/flux_cross_total.txt");
+	g_flux_cross_total->SetMarkerStyle(1);
+	g_flux_cross_total->SetLineColor(kRed);
+	g_flux_cross_total->SetLineStyle(1);
+	g_flux_cross_total->Draw("L");
 	gPad->Update();
 	
 

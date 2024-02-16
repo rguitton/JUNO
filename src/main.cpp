@@ -20,6 +20,7 @@ int main()
     double tab_flux_cross_U_238[size];
     double tab_flux_cross_PU_239[size];
     double tab_flux_cross_PU_241[size];
+    double tab_flux_cross_total[size];
 
     double fission_fraction_U_235=0.58;//MeV
     double fission_fraction_U_238=0.07;//MeV
@@ -52,7 +53,8 @@ int main()
     fstream file_flux_U_238; file_flux_U_238.open("../results/flux_U_238.txt",ios::out);
     fstream file_flux_PU_239; file_flux_PU_239.open("../results/flux_PU_239.txt",ios::out);
     fstream file_flux_PU_241; file_flux_PU_241.open("../results/flux_PU_241.txt",ios::out);
-    fstream file_flux_cross_U_238; file_flux_cross_U_238.open("../results/flux_cross_U_235.txt",ios::out);
+    //fstream file_flux_cross_U_238; file_flux_cross_U_238.open("../results/flux_cross_U_235.txt",ios::out);
+    fstream file_flux_cross_total; file_flux_cross_total.open("../results/flux_cross_total.txt",ios::out);
     fstream file_cross; file_cross.open("../results/cross.txt",ios::out);
 
 
@@ -74,11 +76,15 @@ int main()
         tab_flux_PU_241[i]=fission_fraction_PU_241*flux_PU_241(tableau_energy[i]);
 
         tab_cross[i]=sigma(tableau_energy[i]);
-
-        tab_flux_cross_U_235[i]=tab_cross[i]*tab_flux_U_235[i]*pow(10,2);
-        tab_flux_cross_U_238[i]=tab_cross[i]*tab_flux_U_238[i]*pow(10,2);
-        tab_flux_cross_PU_239[i]=tab_cross[i]*tab_flux_PU_239[i]*pow(10,2);
-        tab_flux_cross_PU_241[i]=tab_cross[i]*tab_flux_PU_241[i]*pow(10,2);
+        //avant pow(10,2) but why?
+        tab_flux_cross_U_235[i]=tab_cross[i]*tab_flux_U_235[i]*pow(10,0);
+        tab_flux_cross_U_238[i]=tab_cross[i]*tab_flux_U_238[i]*pow(10,0);
+        tab_flux_cross_PU_239[i]=tab_cross[i]*tab_flux_PU_239[i]*pow(10,0);
+        tab_flux_cross_PU_241[i]=tab_cross[i]*tab_flux_PU_241[i]*pow(10,0);
+        //tab_flux_cross_total[i]= tab_flux_cross_U_235[i] + tab_flux_cross_U_238[i] + tab_flux_cross_PU_239[i] + tab_flux_cross_PU_241[i];
+        tab_flux_cross_total[i]= tab_cross[i]*flux(tableau_energy[i])*pow(10,4)*pow(10,1); 
+                        //pow(10,4) : conversion flux en en m^-2 et cross en cm^2
+                        //pow(10,1) : facteur de renormalisation ?
 
         // Sauvegarde des données dans les fichiers .txt
 
@@ -92,7 +98,8 @@ int main()
         file_flux_U_238 << tableau_energy[i] << " " << tab_flux_U_238[i] << " " << 0 << " " << 0 << endl;
         file_flux_PU_239 << tableau_energy[i] << " " << tab_flux_PU_239[i] << " " << 0 << " " << 0 << endl;
         file_flux_PU_241 << tableau_energy[i] << " " << tab_flux_PU_241[i] << " " << 0 << " " << 0 << endl;
-        file_flux_cross_U_238 << tableau_energy[i] << " " << tab_flux_cross_U_238[i] << " " << 0 << " " << 0 << endl;
+        //file_flux_cross_U_238 << tableau_energy[i] << " " << tab_flux_cross_U_238[i] << " " << 0 << " " << 0 << endl;
+        file_flux_cross_total << tableau_energy[i] << " " << tab_flux_cross_total[i] << " " << 0 << " " << 0 << endl;
         file_cross << tableau_energy[i] << " " << tab_cross[i] << " " << 0 << " " << 0 << endl;
 
     }
@@ -108,90 +115,12 @@ int main()
     file_flux_U_238.close();
     file_flux_PU_239.close();
     file_flux_PU_241.close();
-    file_flux_cross_U_238.close();
+    //file_flux_cross_U_238.close();
+    file_flux_cross_total.close();
     file_cross.close();
 
+
     
-
-    FILE *gnuplotPipe2 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe2 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
-    
-    fprintf(gnuplotPipe2, "set multiplot layout 2, 1\n");
-    fprintf(gnuplotPipe2, "set title 'Flux et spectre d émission'\n");
-    fprintf(gnuplotPipe2, "set xlabel 'antineutrino energy'\n");
-    fprintf(gnuplotPipe2, "set xrange [0:9]\n");
-
-    fprintf(gnuplotPipe2, "set ylabel 'Number of antineutrino (MeV^-1.fission^-1)'\n");
-    fprintf(gnuplotPipe2, "set ytics nomirror\n");
-    fprintf(gnuplotPipe2, "set yrange [0:0.9]\n");
-
-    fprintf(gnuplotPipe2, "set y2label 'Cross section(cm^-2)'\n");
-    fprintf(gnuplotPipe2, "set y2tics nomirror\n");
-    fprintf(gnuplotPipe2, "set y2range [0:5e-42]\n");
-    
-    //fprintf(gnuplotPipe2, "plot '-' with linespoints lt 3 title 'flux U 235', '-' with linespoints lt 4 title 'flux U 238', '-' with linespoints lt 1 title 'flux PU 239', '-' with linespoints lt 2 title 'flux PU 241', '-' with linespoints axes x1y2 title 'cross section','-' with linespoints axes x1y2 lt 3 title 'U235 product','-' with linespoints axes x1y2 lt 4 title 'U238 product','-' with linespoints axes x1y2 lt 1 title 'PU239 product','-' with linespoints axes x1y2 lt 2 title 'PU241 product'\n");
-    fprintf(gnuplotPipe2, "plot '-' with linespoints lt 3 title 'flux U 235', '-' with linespoints lt 4 title 'flux U 238', '-' with linespoints lt 1 title 'flux PU 239', '-' with linespoints lt 2 title 'flux PU 241', '-' with linespoints axes x1y2 title 'cross section','-' with linespoints axes x1y2 lt 4 title 'U238 product'\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_U_235[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_U_238[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_PU_239[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_PU_241[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-    
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_cross[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_cross_U_238[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-
-    /*
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_cross_U_235[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-
-
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_cross_PU_239[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_cross_PU_241[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-
-    */    
-    
-    fprintf(gnuplotPipe2, "set title 'Donnée de l article'\n");
-    fprintf(gnuplotPipe2, "set datafile separator ','\n plot '../data/fig_2_6.txt' using 1:2 with linespoints axes x1y1 title 'U235', '' using 3:4 with linespoints axes x1y1 title 'Pu239', '' using 5:6 with linespoints axes x1y1 title 'U238', '' using 7:8 with linespoints axes x1y1 title 'Pu241'\n");
-
-    fprintf(gnuplotPipe2, "unset multiplot\n");
-    fflush(gnuplotPipe2);
-
 //Figure 5 article 2
 //The kinetic energy of the positron, together with the typically two 0.511 MeV annihilation photons, is assumed to be fully deposited in the detector article 2 p 1515 and is defined as Edep.
 /*
@@ -393,7 +322,6 @@ int main()
     getchar();
 
     // Fermeture du pipe Gnuplot
-    fclose(gnuplotPipe2);
     fclose(gnuplotPipe3);
     fclose(gnuplotPipe4);
     fclose(gnuplotPipe5);
@@ -404,6 +332,9 @@ int main()
     printf("\t");
     system("pwd");
     printf("\n");
+    printf("Plot de spectra ...\n");
     system("root -q ../src/plotter_spectra.C");
+    printf("Plot de flux ...\n");
+    system("root -q ../src/plotter_flux.C");
     return 0;
 }
