@@ -1,4 +1,5 @@
 #include "fonctions.h"
+#include "plotter.h"
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,6 +8,8 @@
 #include <fstream>
 
 using namespace std;
+
+const char* dir = "../results/";
 
 int main()
 {
@@ -42,22 +45,6 @@ int main()
     double L=53;//à changer 
     double energy;
 
-    // Définition/ouverture de fichiers utiles aux plots ROOT, format %g %g %g %g
-    // spectra
-    fstream file_spectra_initial; file_spectra_initial.open("../results/spectra_initial.txt",ios::out);
-    fstream file_spectra_p21; file_spectra_p21.open("../results/spectra_p21.txt",ios::out);
-    fstream file_spectra_NH; file_spectra_NH.open("../results/spectra_NH.txt",ios::out);
-    fstream file_spectra_IH; file_spectra_IH.open("../results/spectra_IH.txt",ios::out);
-    // flux
-    fstream file_flux_U_235; file_flux_U_235.open("../results/flux_U_235.txt",ios::out);
-    fstream file_flux_U_238; file_flux_U_238.open("../results/flux_U_238.txt",ios::out);
-    fstream file_flux_PU_239; file_flux_PU_239.open("../results/flux_PU_239.txt",ios::out);
-    fstream file_flux_PU_241; file_flux_PU_241.open("../results/flux_PU_241.txt",ios::out);
-    //fstream file_flux_cross_U_238; file_flux_cross_U_238.open("../results/flux_cross_U_235.txt",ios::out);
-    fstream file_flux_cross_total; file_flux_cross_total.open("../results/flux_cross_total.txt",ios::out);
-    fstream file_cross; file_cross.open("../results/cross.txt",ios::out);
-
-
     for (int i=0;i<size;i++){
         tableau_lenght[i]=5+double(i)*28/size;
         tableau_energy[i]=1.81+double(i)*7.19/size;
@@ -85,39 +72,16 @@ int main()
         tab_flux_cross_total[i]= tab_cross[i]*flux(tableau_energy[i])*pow(10,4)*pow(10,1); 
                         //pow(10,4) : conversion flux en en m^-2 et cross en cm^2
                         //pow(10,1) : facteur de renormalisation ?
-
-        // Sauvegarde des données dans les fichiers .txt
-
-        // spectra fig2.4, art[1]
-        file_spectra_initial << tableau_lenght[i] << " " << spectra_initial[i] << " " << 0 << " " << 0 << endl;
-        file_spectra_p21 << tableau_lenght[i] << " " << spectra_p21[i] << " " << 0 << " " << 0 << endl;
-        file_spectra_NH << tableau_lenght[i] << " " << spectra_NH[i] << " " << 0 << " " << 0 << endl;
-        file_spectra_IH << tableau_lenght[i] << " " << spectra_IH[i] << " " << 0 << " " << 0 << endl;
-        // flux from reactor fig2.6, art[1]
-        file_flux_U_235 << tableau_energy[i] << " " << tab_flux_U_235[i] << " " << 0 << " "<< 0 << endl;
-        file_flux_U_238 << tableau_energy[i] << " " << tab_flux_U_238[i] << " " << 0 << " " << 0 << endl;
-        file_flux_PU_239 << tableau_energy[i] << " " << tab_flux_PU_239[i] << " " << 0 << " " << 0 << endl;
-        file_flux_PU_241 << tableau_energy[i] << " " << tab_flux_PU_241[i] << " " << 0 << " " << 0 << endl;
-        //file_flux_cross_U_238 << tableau_energy[i] << " " << tab_flux_cross_U_238[i] << " " << 0 << " " << 0 << endl;
-        file_flux_cross_total << tableau_energy[i] << " " << tab_flux_cross_total[i] << " " << 0 << " " << 0 << endl;
-        file_cross << tableau_energy[i] << " " << tab_cross[i] << " " << 0 << " " << 0 << endl;
-
     }
 
-    // Fermeture des fichiers
-    //spectra
-    file_spectra_initial.close();
-    file_spectra_p21.close();
-    file_spectra_NH.close();
-    file_spectra_IH.close();
-    //flux
-    file_flux_U_235.close();
-    file_flux_U_238.close();
-    file_flux_PU_239.close();
-    file_flux_PU_241.close();
-    //file_flux_cross_U_238.close();
-    file_flux_cross_total.close();
-    file_cross.close();
+
+// Quelques graphiques
+
+        // spectra fig2.4, art[1]
+        const double* all_yaxis1[4]={spectra_initial,spectra_p21,spectra_NH,spectra_IH};
+        plotter_spectra(size,tableau_lenght,all_yaxis1,dir);
+        // flux from reactor fig2.6, art[1]
+
 
 
     
@@ -326,15 +290,5 @@ int main()
     fclose(gnuplotPipe4);
     fclose(gnuplotPipe5);
 
-    // Exécution des macros ROOT pour les plots
-    printf("####################################################\n\n");
-    printf("Current directory during the execution of main.cpp\n");
-    printf("\t");
-    system("pwd");
-    printf("\n");
-    printf("Plot de spectra ...\n");
-    system("root -q ../src/plotter_spectra.C");
-    printf("Plot de flux ...\n");
-    system("root -q ../src/plotter_flux.C");
     return 0;
 }

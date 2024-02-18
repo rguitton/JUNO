@@ -9,9 +9,24 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 set(CMAKE_CURRENT_SOURCE_DIR ${CMAKE_BINARY_DIR}/../src)
 # Ajoute le répertoire include des fichiers .h au chemin de recherche des #include "xx.h" 
 include_directories(${CMAKE_BINARY_DIR}/../include)
+
+# ************************ Start: Specific to ROOT codes *************************
+
+# You need to tell CMake where to find the ROOT installation. This can be done in a number of ways:
+#   - ROOT built with classic configure/make use the provided $ROOTSYS/etc/cmake/FindROOT.cmake
+#   - ROOT built with CMake. Add in CMAKE_PREFIX_PATH the installation prefix for ROOT
+list(APPEND CMAKE_PREFIX_PATH "$ENV{ROOTSYS}/cmake")
+
+#---Locate the ROOT package and defines a number of variables (e.g. ROOT_INCLUDE_DIRS)
+find_package(ROOT COMPONENTS RIO Net)
+
+
+# ************************ End: Specific to ROOT codes *************************
+
+
 # Impose certaines options de compilation
 set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Wextra -Wpedantic")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Wextra -Wpedantic $(root-config --cflags --libs)")
 # Génère la liste des fichiers .cpp devant être compilés
 file(
    GLOB_RECURSE

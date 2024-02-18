@@ -177,6 +177,30 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/monExe.dir/build.make CMakeFiles/monExe.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/plotter.o: src/plotter.cpp.o
+.PHONY : src/plotter.o
+
+# target to build an object file
+src/plotter.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/monExe.dir/build.make CMakeFiles/monExe.dir/src/plotter.cpp.o
+.PHONY : src/plotter.cpp.o
+
+src/plotter.i: src/plotter.cpp.i
+.PHONY : src/plotter.i
+
+# target to preprocess a source file
+src/plotter.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/monExe.dir/build.make CMakeFiles/monExe.dir/src/plotter.cpp.i
+.PHONY : src/plotter.cpp.i
+
+src/plotter.s: src/plotter.cpp.s
+.PHONY : src/plotter.s
+
+# target to generate assembly for a file
+src/plotter.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/monExe.dir/build.make CMakeFiles/monExe.dir/src/plotter.cpp.s
+.PHONY : src/plotter.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -192,6 +216,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/plotter.o"
+	@echo "... src/plotter.i"
+	@echo "... src/plotter.s"
 .PHONY : help
 
 
