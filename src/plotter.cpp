@@ -3,12 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <filesystem>
+//#include <filesystem>
 #include <string>
 //ROOT Libraries
-#include "TCanvas.h"
-#include "TGraphErrors.h"
-#include "TLegend.h"
+#include <TCanvas.h>
+#include <TGraphErrors.h>
+#include <TLegend.h>
+#include <TAxis.h>
 
 
 using namespace std;
@@ -83,4 +84,9 @@ void plotter_spectra(int size, const double* xaxis, const double** all_yaxis, co
 // Save plots
 	c->Print(TString::Format("%sspectra.pdf",dir));
 	//c->Print(TString::Format("%sspectra.png",dir.Data()));
+}
+
+
+void plotter_flux(int size, const double* xaxis, const double** all_yaxis, const char* dir){
+	
 }

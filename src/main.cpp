@@ -9,7 +9,7 @@
 
 using namespace std;
 
-const char* dir = "../results/";
+const char* dir = "../output/";
 
 int main()
 {
