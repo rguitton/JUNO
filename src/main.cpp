@@ -3,6 +3,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <plot.h>
+
+ double trouverMinimum(const double tableau[], int taille) {
+    double minimum = tableau[0]; // Supposons que le premier élément est le minimum initial
+
+    // Parcours du tableau pour trouver le minimum
+    for (int i = 1; i < taille; ++i) {
+        if (tableau[i] < minimum) {
+            minimum = tableau[i]; // Mise à jour du minimum si on trouve un élément plus petit
+        }
+    }
+
+    return minimum;
+    }
 
 int main()
 {
@@ -42,7 +56,7 @@ int main()
     double teta_12=asin(sqrt(sin2_teta_12));
     double teta_13=asin(sqrt(sin2_teta_13));
 
-    double delta2_m21=7.6e-5;//valeur absolue
+    double delta2_m21=7.5e-5;//valeur absolue
     double delta2_m32=2.4e-3;//on peut aussi faire simplmement un changement de signe
     //double delta2_m31=2.53e-3;
 
@@ -62,9 +76,10 @@ int main()
     for(int j=0;j<N;j++){
         T_delta2_m21[j]=delta2_m21+1e-5*(j-(N/2))/2083;//50/0.024=2083
         T_delta2_m32[j]=delta2_m32+1e-3*(j-(N/2))/10638;//50/0.0047=10638       //il faut balayer plus de valeur pour arriver jusqu'à dchi²=1
-        T_delta2_m31_NH[j]=delta2_m31_NH+1e-3*(j-(N/2))/10638;//50/0.0047=10638
-        T_delta2_m31_IH[j]=-(delta2_m31_IH+1e-3*(j-(N/2))/10638);//50/0.0047=10638
-
+        //T_delta2_m31_NH[j]=delta2_m31_NH+1e-3*(j-(N/2))/10638;//50/0.0047=10638
+        //T_delta2_m31_IH[j]=-(delta2_m31_IH+1e-3*(j-(N/2))/10638);//50/0.0047=10638
+        T_delta2_m31_NH[j]=delta2_m31_NH+1e-3*(j-(N/2))/500;//50/0.0047=10638
+        T_delta2_m31_IH[j]=-(delta2_m31_IH+1e-3*(j-(N/2))/800);//50/0.0047=10638
         T_sin2_teta_12[j]=pow(sin(teta_12),2)+1.0*(j-(N/2))/31250;//50/0.0016=31250
         T_sin2_teta_13[j]=pow(sin(teta_13),2)+1.0*(j-(N/2))/19231;//50/0.0026=19231
         printf("T_delta2_m31_IH vaut %g et T_delta2_m31_NH vaut %g \n", T_delta2_m31_IH[j],T_delta2_m31_NH[j]);
@@ -560,28 +575,33 @@ int main()
 
     fflush(gnuplotPipe9);
 
+ for (int i = 0; i < size; i++) {   
+        printf("chi_delta2_m31_NH vaut %g et i vaut %d et tableau energy %g\n", chi_delta2_m31_NH[i], i, tableau_energy[i]-0.8);
+        }
 
     FILE *gnuplotPipe10 = popen("gnuplot -persist", "w");
     if (gnuplotPipe10 == NULL) {
         fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
         return 1;
     }
-    fprintf(gnuplotPipe10, "set title 'évolution de delta chi'\n");
-    fprintf(gnuplotPipe10, "set xlabel 'variation _delta2_m31'\n");
-    fprintf(gnuplotPipe10, "set xrange [2.38e-3:2.5e-3]\n");
+    fprintf(gnuplotPipe10, "set title 'évolution de delta chi inverted mass'\n");
+    fprintf(gnuplotPipe10, "set xlabel 'variation delta2 m31'\n");
+    //fprintf(gnuplotPipe10, "set xrange [2.38e-3:2.5e-3]\n");
     //fprintf(gnuplotPipe10, "set xrange [0:2.5e-3]\n");
 
     fprintf(gnuplotPipe10, "set ylabel 'deltachi'\n");
 
-    fprintf(gnuplotPipe10, "plot '-' with linespoints title 'chi_delta2_m31_IH'\n");
-    
-    for (int i = 0; i < size; i++) {   
-        fprintf(gnuplotPipe10, "%g %g\n",  T_delta2_m31_IH[i],chi_delta2_m31_IH[i]);
+fprintf(gnuplotPipe10, "plot '-' with points title 'chi delta2 m31 IH'\n");
+
+    for (int i = 100; i < size; i++) {   
+
+        //fprintf(gnuplotPipe10, "%g %g\n",  T_delta2_m31_NH[i],chi_delta2_m31_IH[i]);
+        fprintf(gnuplotPipe10, "%g %g\n",  tableau_energy[i]-0.8,Ti_spectre_final_delta2_m31_NH[50][i]);
+
         //printf("T_delta2_m32[i] vaut à la fin %g et chi_delta2_m32[i] %g \n", T_delta2_m32[i],chi_delta2_m32[i]);
     }
     fprintf(gnuplotPipe10, "e\n");
     fflush(gnuplotPipe10);
-
 
     FILE *gnuplotPipe11 = popen("gnuplot -persist", "w");
     if (gnuplotPipe11 == NULL) {
@@ -592,13 +612,20 @@ int main()
     fprintf(gnuplotPipe11, "set xlabel 'variation  delta2 m31'\n");
     //fprintf(gnuplotPipe11, "set xrange [2.38e-3:2.5e-3]\n");
     //fprintf(gnuplotPipe10, "set xrange [0:2.5e-3]\n");
+    fprintf(gnuplotPipe11, "set xrange [2.38e-3:2.6e-3]\n");
 
     fprintf(gnuplotPipe11, "set ylabel 'deltachi'\n");
 
     fprintf(gnuplotPipe11, "plot '-' with linespoints title 'chi delta2 m31 NH', '-' with linespoints title 'chi delta2 m31 IH'\n");
     
-    for (int i = 0; i < size; i++) {   
-        fprintf(gnuplotPipe11, "%g %g\n",  T_delta2_m31_NH[i],chi_delta2_m31_NH[i],chi_delta2_m31_IH[i] );
+    for (int i = 0; i < N; i++) {   
+        fprintf(gnuplotPipe11, "%g %g\n",  T_delta2_m31_NH[i],chi_delta2_m31_NH[i]);
+        //printf("T_delta2_m32[i] vaut à la fin %g et chi_delta2_m32[i] %g \n", T_delta2_m32[i],chi_delta2_m32[i]);
+    }
+    fprintf(gnuplotPipe11, "e\n");
+
+    for (int i = 0; i < N; i++) {   
+        fprintf(gnuplotPipe11, "%g %g\n",  T_delta2_m31_NH[i],chi_delta2_m31_IH[i] );
         //printf("T_delta2_m32[i] vaut à la fin %g et chi_delta2_m32[i] %g \n", T_delta2_m32[i],chi_delta2_m32[i]);
     }
     fprintf(gnuplotPipe11, "e\n");
@@ -643,6 +670,76 @@ int main()
     fclose(gnuplotPipe10);
     fclose(gnuplotPipe11);
     fclose(gnuplotPipe12);
+
+   
+    printf("Le minimum de chi_delta2_m31_NH est %g \n", trouverMinimum(chi_delta2_m31_NH,N));
+    
+    
+    double tab_min[50];
+    double tableau_longueur[50];
+
+    for(int i=0;i<50;i++){
+        tableau_longueur[i]=i*3e3;
+    }
+
+
+//    double Ti_spectre_final_delta2_m31_IH[N][size];
+//    double Ti_spectre_final_delta2_m31_NH[N][size];
+
+for(int w=0;w<50;w++){
+
+    for(int u=0;u<N;u++){
+    for(int i=0;i<size;i++){//on peut se concentrer sur 1 plot
+        Ti_spectre_final_delta2_m31_IH[u][i]=calcul_spectre_lenght(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32[50], 'I',T_delta2_m31_IH[u],tableau_longueur[w] )*Np;
+        Ti_spectre_final_delta2_m31_NH[u][i]=calcul_spectre_lenght(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32[50], 'N',T_delta2_m31_NH[u],tableau_longueur[w])*Np;
+
+    }}
+
+//    double Ti_new_spectre_delta2_m31_IH[N][size];
+//    double Ti_new_spectre_delta2_m31_NH[N][size];
+
+    for(int k=0;k<N;k++){
+    for(int u=0;u<size;u++){
+
+        Ti_new_spectre_delta2_m31_IH[k][u]=0;
+        Ti_new_spectre_delta2_m31_NH[k][u]=0;
+
+        for(int i = 0; i < size; i++){
+
+            double product_delta2_m31_IH=gauss_pdf(tableau_energy[u],tableau_energy[i])*Ti_spectre_final_delta2_m31_IH[k][i];
+            double product_delta2_m31_NH=gauss_pdf(tableau_energy[u],tableau_energy[i])*Ti_spectre_final_delta2_m31_NH[k][i];
+
+            if(product_delta2_m31_IH>0||product_delta2_m31_NH>0){
+            Ti_new_spectre_delta2_m31_IH[k][u] +=product_delta2_m31_IH;
+            Ti_new_spectre_delta2_m31_NH[k][u]+=product_delta2_m31_NH;
+            }
+           }
+           //printf("Ti_new_spectre_teta_13 vaut %g pour k vaut %d et u vaut %d \n", Ti_new_spectre_teta_13[k][u],k,u);
+           }
+    }
+
+//    double chi_delta2_m31_IH[N];
+//    double chi_delta2_m31_NH[N];
+
+    for(int u=0;u<N;u++){
+
+        chi_delta2_m31_IH[u]=0;
+        chi_delta2_m31_NH[u]=0;
+
+        for(int i=0;i<size;i++){
+            if(tableau_energy[i]>1.8&&tableau_energy[i]<8.0){//cf article 1 p43
+                chi_delta2_m31_IH[u]+=pow(Ti_new_spectre_delta2_m31_IH[50][i]-Ti_new_spectre_delta2_m31_IH[u][i],2)/(Ti_new_spectre_delta2_m31_IH[50][i]);
+                chi_delta2_m31_NH[u]+=pow(Ti_new_spectre_delta2_m31_IH[50][i]-Ti_new_spectre_delta2_m31_NH[u][i],2)/(Ti_new_spectre_delta2_m31_IH[50][i]);
+                }
+        }
+        
+
+    } 
+    tab_min[w]=trouverMinimum(chi_delta2_m31_NH,N);
+    printf("le min vaut %g pour i w vaut %d \n", tab_min[w],w);
+
+}
+
 
     return 0;
 }

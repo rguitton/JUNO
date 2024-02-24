@@ -417,7 +417,8 @@ CMakeFiles/monExe.dir/src/main.cpp.o: ../src/main.cpp \
   /usr/include/c++/11/tr1/modified_bessel_func.tcc \
   /usr/include/c++/11/tr1/poly_hermite.tcc \
   /usr/include/c++/11/tr1/poly_laguerre.tcc \
-  /usr/include/c++/11/tr1/riemann_zeta.tcc
+  /usr/include/c++/11/tr1/riemann_zeta.tcc \
+  /usr/include/plot.h
 
 
 ../src/main.cpp:
@@ -437,6 +438,8 @@ CMakeFiles/monExe.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/c++/11/bits/streambuf_iterator.h:
 
 /usr/include/c++/11/cwctype:
+
+/usr/include/plot.h:
 
 /usr/include/c++/11/bits/basic_ios.h:
 
