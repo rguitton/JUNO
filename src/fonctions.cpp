@@ -133,3 +133,36 @@ double gauss_pdf(double E, double Ei)
 	return 1.0 / (standart_dev(E) * sqrt(2.0 * M_PI)) * exp(-(pow((E-Ei)/standart_dev(E), 2)/2.0));
 }
 
+
+
+//partie longueur
+
+double probability_lenght(double E, char A, bool f, double sin2_teta_13, double sin2_teta_12, double delta2_m21, double delta2_m32, double delta2_m31, double lenght ){
+    //double L=53e3;
+    double teta_12_bis=asin(sqrt(sin2_teta_12));
+    double teta_13_bis=asin(sqrt(sin2_teta_13));
+
+    double P21=pow(cos(teta_13_bis),4)*pow(sin(2*teta_12_bis),2)*pow(sin(1.27*delta2_m21*lenght/E),2);
+    if(f==0){ return 1-P21;}
+    else {
+        
+        if(A=='N'){
+            //double delta2_m31=delta2_m32+delta2_m21;
+            double P31=pow(cos(teta_12_bis),2)*0.1*pow(sin(1.27*delta2_m31*lenght/E),2);
+            double P32=pow(sin(teta_12_bis),2)*0.1*pow(sin(1.27*delta2_m32*lenght/E),2);
+            return 1-P21-P31-P32;
+        }
+        else if(A=='I'){
+            //double delta2_m31=delta2_m32-delta2_m21;
+            double P31=pow(cos(teta_12_bis),2)*0.1*pow(sin(1.27*delta2_m31*lenght/E),2);
+            double P32=pow(sin(teta_12_bis),2)*0.1*pow(sin(1.27*(-delta2_m32)*lenght/E),2);
+            return 1-P21-P31-P32;
+        } 
+    }
+    return 0;
+}
+
+    double calcul_spectre_lenght(double tab_flux,double energy, double sin2_teta_13, double sin2_teta_12, double delta2_m21, double delta2_m32, char A,double delta2_m31, double lenght){
+    double spectre=tab_flux*sigma(energy)*probability_lenght(energy, A, 1, sin2_teta_13, sin2_teta_12, delta2_m21, delta2_m32, delta2_m31, lenght)/(4*M_PI*pow(lenght,2));//on divise par 4*pi*L^2
+    return spectre;
+}
