@@ -98,17 +98,17 @@ int main()
     double T_sin2_teta_13_IH[N];
 
     for(int j=0;j<N;j++){
-        T_delta2_m21[j]=delta2_m21+1e-5*(j-(N/2))/2083;//50/0.024=2083
+        T_delta2_m21[j]=delta2_m21+1e-5*(j-(N/2))/1000;
 
-        T_delta2_m32_IH[j]=delta2_m32_IH+1e-3*(j-(N/2))/10638;//50/0.0047=10638       //il faut balayer plus de valeur pour arriver jusqu'à dchi²=1
-        T_delta2_m32_NH[j]=delta2_m32_NH+1e-3*(j-(N/2))/10638;//50/0.0047=10638       //il faut balayer plus de valeur pour arriver jusqu'à dchi²=1
+        T_delta2_m32_IH[j]=delta2_m32_IH+1e-3*(j-(N/2))/1000;
+        T_delta2_m32_NH[j]=delta2_m32_NH+1e-3*(j-(N/2))/1000;
 
-        T_delta2_m31_NH[j]=delta2_m31_NH+1e-3*(j-(N/2))/1000;//50/0.0047=10638
-        T_delta2_m31_IH[j]=delta2_m31_IH+1e-3*(j-(N/2))/1000;//50/0.0047=10638
+        T_delta2_m31_NH[j]=delta2_m31_NH+1e-3*(j-(N/2))/1000;
+        T_delta2_m31_IH[j]=delta2_m31_IH+1e-3*(j-(N/2))/1000;
 
-        T_sin2_teta_12[j]=pow(sin(teta_12),2)+1.0*(j-(N/2))/31250;//50/0.0016=31250
-        T_sin2_teta_13_IH[j]=pow(sin(teta_13_IH),2)+1.0*(j-(N/2))/19231;//50/0.0026=19231
-        T_sin2_teta_13_NH[j]=pow(sin(teta_13_NH),2)+1.0*(j-(N/2))/19231;//50/0.0026=19231
+        T_sin2_teta_12[j]=pow(sin(teta_12),2)+1.0*(j-(N/2))/1000;
+        T_sin2_teta_13_IH[j]=pow(sin(teta_13_IH),2)+1.0*(j-(N/2))/1000;
+        T_sin2_teta_13_NH[j]=pow(sin(teta_13_NH),2)+1.0*(j-(N/2))/1000;
         }
 
     //definition des tableaux énergie et longueur 
