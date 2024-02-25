@@ -13,6 +13,11 @@ void plotter_spectra(int size, const double* xaxis, const double** all_yaxis, co
 void plotter_flux(int size, const double* xaxis, const double** all_yaxis, const char* dir);
 
 //Figure 4, article 2: 
+void plotter_energy_spectrum(int size, const double* xaxis, const double* yaxis,const char* dir);
+
 void plotter_visible_energy_spectrum(int size, const double* xaxis, const double* yaxis,const char* dir);
+
+void plotter_visible_energy_spectrum_six_years(int size, const double* xaxis, const double* yaxis,const char* dir);
+
 
 #endif

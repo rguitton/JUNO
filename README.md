@@ -62,8 +62,10 @@
    `rm ../output/*`
 1. Generate a Makefile associated to the project with
 	`cmake ..`
-1. Excute the code with 
+1. Create an executable with
 	`make`
+1. Execute the code with
+   `../bin/monExe`
 
 ## This is the end
 

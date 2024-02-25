@@ -174,22 +174,13 @@ int main()
         spectre_final[i]=calcul_spectre(flux_total[i],tableau_energy[i], sin2_teta_13_IH, sin2_teta_12, delta2_m21, delta2_m32_IH,delta2_m31_IH);
     }
 
-    FILE *gnuplotPipe3 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe3 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
-    fprintf(gnuplotPipe3, "set title 'Spectre des antineutrino detectés en fonction de l énergie réelle'\n");
-    fprintf(gnuplotPipe3, "set xlabel 'Antineutrino energy [MeV]'\n");
-    fprintf(gnuplotPipe3, "set ylabel 'Nombre d antineutrinos detectés par jour'\n");
-
-    fprintf(gnuplotPipe3, "plot '-' with points title 'IH'\n");
-
-    for (int i = 0; i < size; i++) {    
-        fprintf(gnuplotPipe3, "%g %g\n", tableau_energy[i],spectre_final[i]*Np*3600*24);
-    }
-    fprintf(gnuplotPipe3, "e\n");
-    fflush(gnuplotPipe3);
+    //On reproduit la figure 4 de l'article [2] avec en abscisse l'énergie de l'antineutrino
+    double* tmp = new double[size];
+	for (int i=0;i<size;i++){
+		tmp[i]= spectre_final[i]*Np*3600*24;
+	}
+    plotter_energy_spectrum(size,tableau_energy,tmp,dir);
+    delete[] tmp;
 
     //Cette fois on cherche à déterminer le nombre de neutrinos détectables par jour par JUNO 
 
@@ -228,23 +219,13 @@ int main()
 
     //on trace le spectre des anti-neutrinons en fonction de l'énergie visible  (Figure 4 article 2)
 
-    FILE *gnuplotPipe4 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe4 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
-    fprintf(gnuplotPipe4, "set title 'Spectre des antineutrino detectés en fonction de l énergie visible'\n");
-    fprintf(gnuplotPipe4, "set xlabel 'Visible energy [MeV]'\n");
-    fprintf(gnuplotPipe4, "set ylabel 'Nombre d antineutrinos detectés par jour'\n");
-    fprintf(gnuplotPipe4, "set xrange [1:12]\n");
-
-    fprintf(gnuplotPipe4, "plot '-' with points title 'IH'\n");
-
-    for (int i = 0; i < size; i++) {    
-        fprintf(gnuplotPipe4, "%g %g\n", tableau_energy[i]-0.8,new_spectre[i]*Np*3600*24/10000);
-    }
-    fprintf(gnuplotPipe4, "e\n");
-    fflush(gnuplotPipe4);
+    double* tmpx = new double[size];
+    double* tmpy = new double[size];
+	for (int i=0;i<size;i++){
+        tmpx[i]=tableau_energy[i]-0.8;
+		tmpy[i]= new_spectre[i]*Np*3600*24/10000;
+	}
+    plotter_visible_energy_spectrum(size,tmpx,tmpy,dir);
 
     //On trace le même spectre mais en considérant une periode de 6 ans 
 
@@ -269,6 +250,15 @@ int main()
 
     fflush(gnuplotPipe5);
 
+	for (int i=0;i<size;i++){
+        tmpx[i]=tableau_energy[i]-0.8;
+		tmpy[i]= Np*new_spectre[i]*3600*24*365*6/10000;
+	}
+    plotter_visible_energy_spectrum_six_years(size,tmpx,tmpy,dir);
+    delete[] tmpx; delete[] tmpy;
+
+
+    
 
     //recherche du 83
 
@@ -513,8 +503,8 @@ for(int w=1;w<50;w++){//boucle sur la distance
 
     // Fermeture du pipe Gnuplot
 
-    fclose(gnuplotPipe3);
-    fclose(gnuplotPipe4);
+
+    //fclose(gnuplotPipe4);
     fclose(gnuplotPipe5);
     fclose(gnuplotPipe6);
     fclose(gnuplotPipe7);

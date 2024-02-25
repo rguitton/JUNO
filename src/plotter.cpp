@@ -274,6 +274,32 @@ void plotter_flux(int size, const double* xaxis, const double** all_yaxis, const
 	c->Close();
 }
 
+void plotter_energy_spectrum(int size, const double* xaxis, const double* yaxis, const char* dir){
+	
+	TCanvas *c = new TCanvas("energy_spectrum","energy_spectrum",1366,768);
+	c->SetTickx();
+	c->SetTicky();
+
+	//TGraphErrors *g = new TGraphErrors(size,xaxis,yaxis);
+	TGraphErrors g_tmp;
+	fillGraphIgnoringNaN(g_tmp,xaxis,yaxis,0,0,size);
+	TGraphErrors *g = new TGraphErrors(g_tmp);
+	g->SetTitle(";Antineutrino energy [MeV];Events/0.02 [MeV^{-1}day^{-1}]");
+	g->SetMarkerStyle(1);
+	g->SetLineColor(kBlack);
+	g->SetLineStyle(1);
+	g->GetXaxis()->SetTitleSize(0.045);
+	g->GetYaxis()->SetTitleSize(0.05);
+	g->GetXaxis()->SetTickSize(0.02);
+	g->GetYaxis()->SetTickSize(0.015);
+	g->GetXaxis()->SetDecimals();
+	g->Draw("APL"); gPad->Update();
+
+	c->Print(TString::Format("%santineutrino_energy_spectrum.pdf",dir));
+	//c->Print(TString::Format("%svisible_energy_spectrum.png",dir));
+	c->Close();
+}
+
 void plotter_visible_energy_spectrum(int size, const double* xaxis, const double* yaxis, const char* dir){
 	
 	TCanvas *c = new TCanvas("visible_energy_spectrum","visible_energy_spectrum",1366,768);
@@ -295,10 +321,33 @@ void plotter_visible_energy_spectrum(int size, const double* xaxis, const double
 	g->GetXaxis()->SetDecimals();
 	g->Draw("APL"); gPad->Update();
 
-	
-
 	c->Print(TString::Format("%svisible_energy_spectrum.pdf",dir));
 	//c->Print(TString::Format("%svisible_energy_spectrum.png",dir));
 	c->Close();
 }
 
+void plotter_visible_energy_spectrum_six_years(int size, const double* xaxis, const double* yaxis, const char* dir){
+	
+	TCanvas *c = new TCanvas("visible_energy_spectrum","visible_energy_spectrum",1366,768);
+	c->SetTickx();
+	c->SetTicky();
+
+	//TGraphErrors *g = new TGraphErrors(size,xaxis,yaxis);
+	TGraphErrors g_tmp;
+	fillGraphIgnoringNaN(g_tmp,xaxis,yaxis,0,0,size);
+	TGraphErrors *g = new TGraphErrors(g_tmp);
+	g->SetTitle("Juno 6 years data datking;Visible Energy [MeV];Events number");
+	g->SetMarkerStyle(1);
+	g->SetLineColor(kBlack);
+	g->SetLineStyle(1);
+	g->GetXaxis()->SetTitleSize(0.045);
+	g->GetYaxis()->SetTitleSize(0.05);
+	g->GetXaxis()->SetTickSize(0.02);
+	g->GetYaxis()->SetTickSize(0.015);
+	g->GetXaxis()->SetDecimals();
+	g->Draw("APL"); gPad->Update();
+
+	c->Print(TString::Format("%svisible_energy_spectrum_six_years.pdf",dir));
+	//c->Print(TString::Format("%svisible_energy_spectrum.png",dir));
+	c->Close();
+}
