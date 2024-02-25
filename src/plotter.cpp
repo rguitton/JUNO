@@ -357,7 +357,6 @@ void plotter_chi2(int nPoint, int nx, int ny, const double** all_xaxis, const do
 	c->SetTickx();
 	c->SetTicky();
 	c->Divide(nx,ny);
-
 	
 	// Affichage de SIN^2(θ_{13})
 	c->cd(1);
