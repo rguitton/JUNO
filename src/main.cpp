@@ -20,7 +20,11 @@
 
 int main()
 {
+    //Définition des variables 
+
     int size=1000;
+    int N=100;
+
     double tableau_lenght[size];
     double tableau_energy[size];
     
@@ -47,64 +51,70 @@ int main()
     double spectra_NH[size];
     double spectra_IH[size];
 
-    double L=53;//à changer 
+    double L=53;
     double energy;
 
-    double sin2_teta_12=0.307;
-    double sin2_teta_13=0.0218;   
-
-    double teta_12=asin(sqrt(sin2_teta_12));
-    double teta_13=asin(sqrt(sin2_teta_13));
-
     double delta2_m21=7.5e-5;//valeur absolue
-    double delta2_m32=2.4e-3;//on peut aussi faire simplmement un changement de signe
-    double delta2_m32_IH=2.4e-3+delta2_m21;//on peut aussi faire simplmement un changement de signe
+    double sin2_teta_12=0.308;
+    double teta_12=asin(sqrt(sin2_teta_12));
 
-    //double delta2_m31=2.53e-3;
+    //Normal ordering mass (Table 1.1 article [1])
+    double sin2_teta_13_NH=0.0234;   
 
-    double delta2_m31_NH=delta2_m32+delta2_m21;
-    double delta2_m31_IH=delta2_m32-delta2_m21;
-    double delta2_m31_moy=2.52e-3;
+    double teta_13_NH=asin(sqrt(sin2_teta_13_NH));
 
-    int N=100;
+    double delta2_m31_NH=2.47e-3;
+    double delta2_m32_NH=delta2_m31_NH-delta2_m21;
+
+    //Inverted ordering mass (Table 1.1 article [1])
+    double sin2_teta_13_IH=0.0240;   
+
+    double teta_13_IH=asin(sqrt(sin2_teta_13_IH));
+
+    double delta2_m31_IH=2.42e-3;
+    double delta2_m32_IH=delta2_m31_IH+delta2_m21;
+
+    double Np=1.44e33; //Nombre de protons disponible pour la détection
 
     double T_delta2_m21[N];
-    double T_delta2_m32[N];
+    double T_delta2_m32_IH[N];
+    double T_delta2_m32_NH[N];
+
     double T_delta2_m31_NH[N];
     double T_delta2_m31_IH[N];
     double T_delta2_m31_moy[N];
 
     double T_sin2_teta_12[N];
-    double T_sin2_teta_13[N];
+        
+    double T_sin2_teta_13_NH[N];
+    double T_sin2_teta_13_IH[N];
 
     for(int j=0;j<N;j++){
         T_delta2_m21[j]=delta2_m21+1e-5*(j-(N/2))/2083;//50/0.024=2083
-        T_delta2_m32[j]=delta2_m32+1e-3*(j-(N/2))/10638;//50/0.0047=10638       //il faut balayer plus de valeur pour arriver jusqu'à dchi²=1
-        //T_delta2_m31_NH[j]=delta2_m31_NH+1e-3*(j-(N/2))/10638;//50/0.0047=10638
-        //T_delta2_m31_IH[j]=-(delta2_m31_IH+1e-3*(j-(N/2))/10638);//50/0.0047=10638
-        // T_delta2_m31_NH[j]=delta2_m31_NH+1e-3*(j-(N/2))/500;//50/0.0047=10638
-        // T_delta2_m31_IH[j]=(delta2_m31_IH+1e-3*(j-(N/2))/500);//50/0.0047=10638
-       T_delta2_m31_NH[j]=2.47e-3+1e-3*(j-(N/2))/1000;//50/0.0047=10638
-        T_delta2_m31_IH[j]=(2.42e-3+1e-3*(j-(N/2))/1000);//50/0.0047=10638
 
-        T_delta2_m31_moy[j]=(delta2_m31_moy+1e-3*(j-(N/2))/800);//50/0.0047=10638
+        T_delta2_m32_IH[j]=delta2_m32_IH+1e-3*(j-(N/2))/10638;//50/0.0047=10638       //il faut balayer plus de valeur pour arriver jusqu'à dchi²=1
+        T_delta2_m32_NH[j]=delta2_m32_NH+1e-3*(j-(N/2))/10638;//50/0.0047=10638       //il faut balayer plus de valeur pour arriver jusqu'à dchi²=1
+
+        T_delta2_m31_NH[j]=delta2_m31_NH+1e-3*(j-(N/2))/1000;//50/0.0047=10638
+        T_delta2_m31_IH[j]=delta2_m31_IH+1e-3*(j-(N/2))/1000;//50/0.0047=10638
 
         T_sin2_teta_12[j]=pow(sin(teta_12),2)+1.0*(j-(N/2))/31250;//50/0.0016=31250
-        T_sin2_teta_13[j]=pow(sin(teta_13),2)+1.0*(j-(N/2))/19231;//50/0.0026=19231
-        printf("T_delta2_m31_IH vaut %g et T_delta2_m31_NH vaut %g \n", T_delta2_m31_IH[j],T_delta2_m31_NH[j]);
+        T_sin2_teta_13_IH[j]=pow(sin(teta_13_IH),2)+1.0*(j-(N/2))/19231;//50/0.0026=19231
+        T_sin2_teta_13_NH[j]=pow(sin(teta_13_NH),2)+1.0*(j-(N/2))/19231;//50/0.0026=19231
         }
 
+    //definition des tableaux énergie et longueur 
     for (int i=0;i<size;i++){
         tableau_lenght[i]=5+double(i)*28/size;
         tableau_energy[i]=1+double(i)*10/size;
     }
-
+    //on définit ensuite les tableaux associés à chaque 
      for (int i=0;i<size;i++){
         double energy=L/tableau_lenght[i];
         spectra_initial[i]=flux(energy)*sigma(energy);
-        spectra_p21[i]=flux(energy)*sigma(energy)*probability(energy, 'I', 0, sin2_teta_13, sin2_teta_12, delta2_m21, delta2_m32,delta2_m31_IH );
-        spectra_NH[i]=flux(energy)*sigma(energy)*probability(energy, 'N', 1, sin2_teta_13, sin2_teta_12, delta2_m21, delta2_m32,delta2_m31_NH);
-        spectra_IH[i]=flux(energy)*sigma(energy)*probability(energy, 'I', 1, sin2_teta_13, sin2_teta_12, delta2_m21, delta2_m32,delta2_m31_IH);
+        spectra_p21[i]=flux(energy)*sigma(energy)*probability(energy, 0, sin2_teta_13_IH, sin2_teta_12, delta2_m21, delta2_m32_IH,delta2_m31_IH );
+        spectra_NH[i]=flux(energy)*sigma(energy)*probability(energy, 1, sin2_teta_13_NH, sin2_teta_12, delta2_m21, delta2_m32_NH,delta2_m31_NH);
+        spectra_IH[i]=flux(energy)*sigma(energy)*probability(energy, 1, sin2_teta_13_IH, sin2_teta_12, delta2_m21, delta2_m32_IH,delta2_m31_IH);
 
         tab_flux_U_235[i]=fission_fraction_U_235*flux_U_235(tableau_energy[i]);
         tab_flux_U_238[i]=fission_fraction_U_238*flux_U_238(tableau_energy[i]);
@@ -120,6 +130,7 @@ int main()
 
     }
 
+    //On reproduit la figure 2.4 de l'article [1] 
    FILE *gnuplotPipe1 = popen("gnuplot -persist", "w");
     if (gnuplotPipe1 == NULL) {
         fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
@@ -128,7 +139,7 @@ int main()
     fprintf(gnuplotPipe1,"set title 'reactor antineutrino flux for different neutrino MHs'\n");
     fprintf(gnuplotPipe1, "set xlabel 'L/E(km/MeV)'\n");
     fprintf(gnuplotPipe1, "set ylabel 'Arbitrary unit'\n");
-    fprintf(gnuplotPipe1, "plot '-' with linespoints title 'Non oscillation', '-' with linespoints title 'theta_21', '-' with linespoints title 'NH', '-' with linespoints title 'IH'\n");
+    fprintf(gnuplotPipe1, "plot '-' with points title 'Non oscillation', '-' with points title 'theta_21', '-' with points title 'NH', '-' with points title 'IH'\n");
 
     for (int i = 0; i < size; i++) {
         fprintf(gnuplotPipe1, "%g %g\n", tableau_lenght[i], spectra_initial[i]);
@@ -152,7 +163,9 @@ int main()
         
     fflush(gnuplotPipe1);
 
-     FILE *gnuplotPipe2 = popen("gnuplot -persist", "w");
+    //On reproduit la figure 2.6 de l'article [1]
+
+    FILE *gnuplotPipe2 = popen("gnuplot -persist", "w");
     if (gnuplotPipe2 == NULL) {
         fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
         return 1;
@@ -171,8 +184,7 @@ int main()
     fprintf(gnuplotPipe2, "set y2tics nomirror\n");
     fprintf(gnuplotPipe2, "set y2range [0:5e-42]\n");
     
-    //fprintf(gnuplotPipe2, "plot '-' with linespoints lt 3 title 'flux U 235', '-' with linespoints lt 4 title 'flux U 238', '-' with linespoints lt 1 title 'flux PU 239', '-' with linespoints lt 2 title 'flux PU 241', '-' with linespoints axes x1y2 title 'cross section','-' with linespoints axes x1y2 lt 3 title 'U235 product','-' with linespoints axes x1y2 lt 4 title 'U238 product','-' with linespoints axes x1y2 lt 1 title 'PU239 product','-' with linespoints axes x1y2 lt 2 title 'PU241 product'\n");
-    fprintf(gnuplotPipe2, "plot '-' with linespoints lt 3 title 'flux U 235', '-' with linespoints lt 4 title 'flux U 238', '-' with linespoints lt 1 title 'flux PU 239', '-' with linespoints lt 2 title 'flux PU 241', '-' with linespoints axes x1y2 title 'cross section','-' with linespoints axes x1y2 lt 4 title 'U238 product'\n");
+    fprintf(gnuplotPipe2, "plot '-' with points lt 3 title 'flux U 235', '-' with points lt 4 title 'flux U 238', '-' with points lt 1 title 'flux PU 239', '-' with points lt 2 title 'flux PU 241', '-' with points axes x1y2 title 'cross section','-' with points axes x1y2 lt 4 title 'U238 product'\n");
 
     for (int i = 0; i < size; i++) {
         fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_U_235[i]);
@@ -205,114 +217,17 @@ int main()
     }
     fprintf(gnuplotPipe2, "e\n");
 
-    /*
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_cross_U_235[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
+    //on traces les données de l'article récuperées graphiquement pour pouvoir les comparer
 
-
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_cross_PU_239[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_cross_PU_241[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-
-    */    
-    
     fprintf(gnuplotPipe2, "set title 'Donnée de l article'\n");
-    fprintf(gnuplotPipe2, "set datafile separator ','\n plot '../data/fig_2_6.txt' using 1:2 with linespoints axes x1y1 title 'U235', '' using 3:4 with linespoints axes x1y1 title 'Pu239', '' using 5:6 with linespoints axes x1y1 title 'U238', '' using 7:8 with linespoints axes x1y1 title 'Pu241'\n");
+    fprintf(gnuplotPipe2, "set datafile separator ','\n plot '../data/fig_2_6.txt' using 1:2 with points axes x1y1 title 'U235', '' using 3:4 with points axes x1y1 title 'Pu239', '' using 5:6 with points axes x1y1 title 'U238', '' using 7:8 with points axes x1y1 title 'Pu241'\n");
 
     fprintf(gnuplotPipe2, "unset multiplot\n");
     fflush(gnuplotPipe2);
 
-//Figure 5 article 2
-//The kinetic energy of the positron, together with the typically two 0.511 MeV annihilation photons, is assumed to be fully deposited in the detector article 2 p 1515 and is defined as Edep.
-/*
 
- 
-        spectra_NH_dep[i]=flux(tableau_energy_deposited[i])*sigma(tableau_energy_deposited[i])*probability(tableau_energy_deposited[i], 'N', 1);
-        spectra_IH_dep[i]=flux(tableau_energy_deposited[i])*sigma(tableau_energy_deposited[i])*probability(tableau_energy_deposited[i], 'I', 1);
- }
-// sur 6 ans
- for (int i=0;i<size;i++){
-        spectra_NH_dep[i]*=3600*24*365*6;
-        spectra_IH_dep[i]*=3600*24*365*6;
- }
- */
-
-    double tableau_energy_deposited[size];
-    double Np=1.44e33;
-    for (int i=0;i<size;i++){
-        tableau_energy_deposited[i]=energy_positron(tableau_energy[i])+2*0.511;}
-        //printf("le spectre vaut %g \n",tableau_energy_deposited[i]);}
     
-    double flux_per_fission_dep[size];
-    for(int i=0;i<size;i++){
-        flux_per_fission_dep[i]=flux(tableau_energy_deposited[i]);
-    }
-
-    double flux_total_dep[size];
-    for(int i=0;i<size;i++){
-        flux_total_dep[i]=total_reactor_flux(flux_per_fission_dep[i],36e9);
-    }
-    double spectre_final_dep[size];
-    for(int i=0;i<size;i++){
-        //total_spectre_final[i]=total_flux[i]*sigma(tableau_energy[i])*probability(tableau_energy[i], 'I', 1);     
-        spectre_final_dep[i]=calcul_spectre(flux_total_dep[i],tableau_energy_deposited[i], sin2_teta_13, sin2_teta_12, delta2_m21, delta2_m32, 'I',delta2_m31_IH);
-        }
- 
-
-    //Figure 4 article 2
-//Evis ≃ E − 0.8MeV. p36 article 1
-
-    double tableau_energy_vis[size];
-    for (int i=0;i<size;i++){
-        tableau_energy_vis[i]=tableau_energy[i]-0.8;}
-            
-    double flux_per_fission_vis[size];
-    for(int i=0;i<size;i++){
-        flux_per_fission_vis[i]=flux(tableau_energy_vis[i]);
-    }
-
-    double flux_total_vis[size];
-    for(int i=0;i<size;i++){
-        flux_total_vis[i]=total_reactor_flux(flux_per_fission_vis[i],36e9);
-    }
-    double spectre_final_vis[size];
-    for(int i=0;i<size;i++){
-        //total_spectre_final[i]=total_flux[i]*sigma(tableau_energy[i])*probability(tableau_energy[i], 'I', 1);     
-        spectre_final_vis[i]=calcul_spectre(flux_total_vis[i],tableau_energy_vis[i], sin2_teta_13, sin2_teta_12, delta2_m21, delta2_m32, 'I',delta2_m31_IH);
-        }
-
-
-    FILE *gnuplotPipe4 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe4 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
-    fprintf(gnuplotPipe4, "set title 'Juno 1 day data datking'\n");
-    fprintf(gnuplotPipe4, "set xlabel 'visible energy [MeV]'\n");
-    fprintf(gnuplotPipe4, "set ylabel 'Events'\n");
-    //fprintf(gnuplotPipe4, "set yrange [0:0.5]\n");
-
-
-    fprintf(gnuplotPipe4, "plot '-' with linespoints title 'IH'\n");
-
-    for (int i = 0; i < size; i++) {    
-        fprintf(gnuplotPipe4, "%g %g\n", tableau_energy_vis[i], Np*spectre_final_vis[i]*3600*24);
-    }
-    fprintf(gnuplotPipe4, "e\n");
-    
-    
-    fflush(gnuplotPipe4);
-
-   
+    //On veut obtenir le spectre des neutrinos détectés en fonction de leur énergie réelle sans prendre en compte l'incertitude sur l'énergie visible
 
     double flux_per_fission[size];
     for(int i=0;i<size;i++){
@@ -326,89 +241,41 @@ int main()
     double spectre_final[size];
 
     for(int i=0;i<size;i++){
-        //total_spectre_final[i]=total_flux[i]*sigma(tableau_energy[i])*probability(tableau_energy[i], 'I', 1);     
-        spectre_final[i]=calcul_spectre(flux_total[i],tableau_energy[i], sin2_teta_13, sin2_teta_12, delta2_m21, delta2_m32, 'I',delta2_m31_IH);
+        spectre_final[i]=calcul_spectre(flux_total[i],tableau_energy[i], sin2_teta_13_IH, sin2_teta_12, delta2_m21, delta2_m32_IH,delta2_m31_IH);
     }
 
-    FILE *gnuplotPipe5 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe5 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
-    fprintf(gnuplotPipe5, "set title 'Spectre des antineutrino detectés en fonction de l énergie'\n");
-    fprintf(gnuplotPipe5, "set xlabel 'Antineutrino energy [MeV]'\n");
-    fprintf(gnuplotPipe5, "set ylabel 'Nombre d antineutrinos detectés par jour'\n");
-
-    fprintf(gnuplotPipe5, "plot '-' with linespoints title 'IH'\n");
-
-    for (int i = 0; i < size; i++) {    
-        fprintf(gnuplotPipe5, "%g %g\n", tableau_energy[i],spectre_final[i]*Np*3600*24);
-    }
-    fprintf(gnuplotPipe5, "e\n");
-    fflush(gnuplotPipe5);
-
-
-    double IBD_initial=0;//par seconde
-    double h=tableau_energy[10]-tableau_energy[9];
-    for(int i=0;i<size-1;i++){
-        if(tableau_energy[i]>1.8&&tableau_energy[i]<12){//cf article 2
-        IBD_initial += h*(spectre_final[i] + spectre_final[i+1])/2;}
-        
-    }
-    double IBD_detected_per_d=Np*IBD_initial*3600*24;
-    
-    double new_spectre[size];
-    for(int u=0;u<size;u++){
-        new_spectre[u]=0;
-        for(int i = 0; i < size; i++){
-           //new_spectre[u] += spectre_final[i]*Np*3600*24*gauss_pdf(tableau_energy[u],tableau_energy[i]);
-           double product=gauss_pdf(tableau_energy[u],tableau_energy[i])*spectre_final[i];
-           if(product>0){
-                new_spectre[u] +=product;
-           }
-           }}
-        FILE *gnuplotPipe6 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe6 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
-    fprintf(gnuplotPipe6, "set title 'Spectre des antineutrino detectés en fonction de l énergie visible'\n");
-    fprintf(gnuplotPipe6, "set xlabel 'Visible energy [MeV]'\n");
-    fprintf(gnuplotPipe6, "set ylabel 'Nombre d antineutrinos detectés par jour'\n");
-    fprintf(gnuplotPipe6, "set xrange [1:12]\n");
-
-    fprintf(gnuplotPipe6, "plot '-' with linespoints title 'IH'\n");
-
-    for (int i = 0; i < size; i++) {    
-        fprintf(gnuplotPipe6, "%g %g\n", tableau_energy[i]-0.8,new_spectre[i]*Np*3600*24/10000);
-    }
-    fprintf(gnuplotPipe6, "e\n");
-    fflush(gnuplotPipe6);
-
-        FILE *gnuplotPipe3 = popen("gnuplot -persist", "w");
+    FILE *gnuplotPipe3 = popen("gnuplot -persist", "w");
     if (gnuplotPipe3 == NULL) {
         fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
         return 1;
     }
-    fprintf(gnuplotPipe3, "set title 'Juno 6 years data datking'\n");
-    fprintf(gnuplotPipe3, "set xlabel 'Deposited energy [MeV]'\n");
-    fprintf(gnuplotPipe3, "set ylabel 'Events number'\n");
-    fprintf(gnuplotPipe3, "set xrange [1:12]\n");
+    fprintf(gnuplotPipe3, "set title 'Spectre des antineutrino detectés en fonction de l énergie réelle'\n");
+    fprintf(gnuplotPipe3, "set xlabel 'Antineutrino energy [MeV]'\n");
+    fprintf(gnuplotPipe3, "set ylabel 'Nombre d antineutrinos detectés par jour'\n");
 
-    fprintf(gnuplotPipe3, "plot '-' with linespoints title 'IH', '-' with linespoints title 'teta13_u=0' \n");
+    fprintf(gnuplotPipe3, "plot '-' with points title 'IH'\n");
 
     for (int i = 0; i < size; i++) {    
-        fprintf(gnuplotPipe3, "%g %g\n", tableau_energy[i]-0.8, Np*new_spectre[i]*3600*24*365*6/10000);
+        fprintf(gnuplotPipe3, "%g %g\n", tableau_energy[i],spectre_final[i]*Np*3600*24);
     }
-    
-    
     fprintf(gnuplotPipe3, "e\n");
-
     fflush(gnuplotPipe3);
 
+    //Cette fois on cherche à déterminer le nombre de neutrinos détectables par jour par JUNO 
 
-    //recherche du 83
-    //printf("il y a %g event par jour \n", Np*integrale_spectre(5.0,25.0,1000)*3600*24);
+    double IBD_initial=0; //par seconde
+    double h=tableau_energy[10]-tableau_energy[9];
+    for(int i=0;i<size-1;i++){
+        if(tableau_energy[i]>1.8&&tableau_energy[i]<12){//cf article 2
+            IBD_initial += h*(spectre_final[i] + spectre_final[i+1])/2;
+            }
+        
+        }
+    
+    double IBD_detected_per_d=Np*IBD_initial*3600*24; //nombre de neutrinons détectés par jour
+    
+    //On peut donc estimer le nombre d'anti-neutrinos détectés par jour en fonction des différents critères de sélection, on retrouve bien la Table 2.1 de l'article [1]
+    
     printf("On peut s'attendre à %g détections par jour sans sélection \n", IBD_detected_per_d);
     printf("On peut s'attendre à %g détections par jour après la sélectivité Fiducial volume (91%) \n", IBD_detected_per_d*0.91);
     printf("On peut s'attendre à %g détections par jour après la sélectivité Energy cut (97.8%) \n", IBD_detected_per_d*0.91*0.978);
@@ -417,31 +284,69 @@ int main()
     printf("On peut s'attendre à %g détections par jour après la sélectivité Muon veto (83%) \n", IBD_detected_per_d*0.91*0.978*0.991*0.987*0.83);
     printf("On peut s'attendre à %g détections par jour après la sélectivité Combined (73%) \n", IBD_detected_per_d*0.73);
 
+    //Pour pouvoir tracé le spectre des anti-neutrinos en fonction de l'énergie vissible nous devons considérer l'incertitude liée à celle-ci (Equation (9) article [2])
 
-    /*
-    int count=0;
-    for(int i=0;i<size;i++){
-        if(tableau_energy[i]>1.8&&tableau_energy[i]<8.0){//cf article 1 p43
-            count=count+1;
-    }}
+    double new_spectre[size];
+    for(int u=0;u<size;u++){
+        new_spectre[u]=0;
+        for(int i = 0; i < size; i++){
+           double product=gauss_pdf(tableau_energy[u],tableau_energy[i])*spectre_final[i]; //on convolue par une gaussienne 
+           if(product>0){
+                new_spectre[u] +=product;
+           }
+           }}
 
-    double M_neutrino[count];
-    double T_neutrino[count];
-    double chi=0;
-    for(int i=0;i<size-1;i++){
-        if(tableau_energy[i]>1.8&&tableau_energy[i]<8.0){//cf article 1 p43
-            T_neutrino[i]=Np*h*(spectre_final[i] + spectre_final[i+1])/2*3600*24*365*6;
-             M_neutrino[i]=Np*h*(new_spectre[i]+new_spectre[i+1])/2*3600*24*365*6;
-            //printf("Mi vaut %g \n", M_neutrino[i]);
-            //printf("Ti vaut %g \n", T_neutrino[i]);
-            chi+=pow((M_neutrino[i]-T_neutrino[i]),2)/M_neutrino[i];
-            }
+    //on trace le spectre des anti-neutrinons en fonction de l'énergie visible  (Figure 4 article 2)
+
+    FILE *gnuplotPipe4 = popen("gnuplot -persist", "w");
+    if (gnuplotPipe4 == NULL) {
+        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
+        return 1;
     }
+    fprintf(gnuplotPipe4, "set title 'Spectre des antineutrino detectés en fonction de l énergie visible'\n");
+    fprintf(gnuplotPipe4, "set xlabel 'Visible energy [MeV]'\n");
+    fprintf(gnuplotPipe4, "set ylabel 'Nombre d antineutrinos detectés par jour'\n");
+    fprintf(gnuplotPipe4, "set xrange [1:12]\n");
 
-    printf("chi vaut %g \n", chi);
-    */
+    fprintf(gnuplotPipe4, "plot '-' with points title 'IH'\n");
 
-    double Ti_spectre_final_teta_13[N][size];//N represente l'indice de ligne, et donc de la variation (à 50 on est à 0)
+    for (int i = 0; i < size; i++) {    
+        fprintf(gnuplotPipe4, "%g %g\n", tableau_energy[i]-0.8,new_spectre[i]*Np*3600*24/10000);
+    }
+    fprintf(gnuplotPipe4, "e\n");
+    fflush(gnuplotPipe4);
+
+    //On trace le même spectre mais en considérant une periode de 6 ans 
+
+    FILE *gnuplotPipe5 = popen("gnuplot -persist", "w");
+    if (gnuplotPipe5 == NULL) {
+        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
+        return 1;
+    }
+    fprintf(gnuplotPipe5, "set title 'Juno 6 years data datking'\n");
+    fprintf(gnuplotPipe5, "set xlabel 'Visible energy [MeV]'\n");
+    fprintf(gnuplotPipe5, "set ylabel 'Events number'\n");
+    fprintf(gnuplotPipe5, "set xrange [1:12]\n");
+
+    fprintf(gnuplotPipe5, "plot '-' with points title 'IH' \n");
+
+    for (int i = 0; i < size; i++) {    
+        fprintf(gnuplotPipe5, "%g %g\n", tableau_energy[i]-0.8, Np*new_spectre[i]*3600*24*365*6/10000);
+    }
+    
+    
+    fprintf(gnuplotPipe5, "e\n");
+
+    fflush(gnuplotPipe5);
+
+
+    //recherche du 83
+
+    //Dans cette partie nous allons essayer de déterminer les fonctions chi associés aux incertitudes de chaques paramètres 
+    //On définit des matrices, la ligne correspond à la variation du paramètre associé et la colonne représente le spectre associé à chaque paramètre
+    //L'indice de ligne 0 correspond au paramètre-sigma et l'indice N-1 au paramètre+sigma 
+
+    double Ti_spectre_final_teta_13[N][size];
     double Ti_spectre_final_teta_12[N][size];
     double Ti_spectre_final_delta2_m21[N][size];
     double Ti_spectre_final_delta2_m31_IH[N][size];
@@ -449,16 +354,13 @@ int main()
 
     for(int u=0;u<N;u++){
     for(int i=0;i<size;i++){//on peut se concentrer sur 1 plot
-        //total_spectre_final[i]=total_flux[i]*sigma(tableau_energy[i])*probability(tableau_energy[i], 'I', 1);     
-        Ti_spectre_final_teta_13[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13[u], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32[50], 'I',delta2_m31_IH)*Np;
-        Ti_spectre_final_teta_12[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[u], T_delta2_m21[50], T_delta2_m32[50], 'I',delta2_m31_IH)*Np;
-        //Ti_spectre_final_teta_12[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[u], T_delta2_m21[50], T_delta2_m32[50], 'I',delta2_m31_IH)*Np;
+        Ti_spectre_final_teta_13[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13_IH[u], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32_IH[50],T_delta2_m31_IH[50])*Np;
+        Ti_spectre_final_teta_12[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13_IH[50], T_sin2_teta_12[u], T_delta2_m21[50], T_delta2_m32_IH[50],T_delta2_m31_IH[50])*Np;
 
-        Ti_spectre_final_delta2_m21[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[50], T_delta2_m21[u], T_delta2_m32[50], 'I',delta2_m31_IH)*Np;
-        // Ti_spectre_final_delta2_m31_IH[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32[50], 'I',T_delta2_m31_IH[u])*Np;
-        // Ti_spectre_final_delta2_m31_NH[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32[50], 'N', T_delta2_m31_NH[u])*Np;
-        Ti_spectre_final_delta2_m31_NH[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], 2.34e-2, 3.08e-1, 7.54e-5, 2.4e-3, 'N', T_delta2_m31_NH[u])*Np;
-        Ti_spectre_final_delta2_m31_IH[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], 2.4e-2, 3.08e-1, 7.54e-5, 2.5e-3, 'I',T_delta2_m31_IH[u])*Np;
+        Ti_spectre_final_delta2_m21[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13_IH[50], T_sin2_teta_12[50], T_delta2_m21[u], T_delta2_m32_IH[50],T_delta2_m31_IH[50])*Np;
+
+        Ti_spectre_final_delta2_m31_NH[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13_NH[50], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32_NH[50], T_delta2_m31_NH[u])*Np;
+        Ti_spectre_final_delta2_m31_IH[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13_IH[50], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32_IH[50], T_delta2_m31_IH[u])*Np;
 
     }}
 
@@ -469,32 +371,32 @@ int main()
     double Ti_new_spectre_delta2_m31_NH[N][size];
 
     for(int k=0;k<N;k++){
-    for(int u=0;u<size;u++){
-        Ti_new_spectre_teta_13[k][u]=0;
-        Ti_new_spectre_teta_12[k][u]=0;
-        Ti_new_spectre_delta2_m21[k][u]=0;
-        Ti_new_spectre_delta2_m31_IH[k][u]=0;
-        Ti_new_spectre_delta2_m31_NH[k][u]=0;
+        for(int u=0;u<size;u++){
+            Ti_new_spectre_teta_13[k][u]=0;
+            Ti_new_spectre_teta_12[k][u]=0;
+            Ti_new_spectre_delta2_m21[k][u]=0;
+            Ti_new_spectre_delta2_m31_IH[k][u]=0;
+            Ti_new_spectre_delta2_m31_NH[k][u]=0;
 
-        for(int i = 0; i < size; i++){
-           //new_spectre[u] += spectre_final[i]*Np*3600*24*gauss_pdf(tableau_energy[u],tableau_energy[i]);
-            double product_teta13=gauss_pdf(tableau_energy[u],tableau_energy[i])*Ti_spectre_final_teta_13[k][i];
-            double product_teta12=gauss_pdf(tableau_energy[u],tableau_energy[i])*Ti_spectre_final_teta_12[k][i];
-            double product_delta2_m21=gauss_pdf(tableau_energy[u],tableau_energy[i])*Ti_spectre_final_delta2_m21[k][i];
-            double product_delta2_m31_IH=gauss_pdf(tableau_energy[u],tableau_energy[i])*Ti_spectre_final_delta2_m31_IH[k][i];
-            double product_delta2_m31_NH=gauss_pdf(tableau_energy[u],tableau_energy[i])*Ti_spectre_final_delta2_m31_NH[k][i];
+            for(int i = 0; i < size; i++){
+                double product_teta13=gauss_pdf(tableau_energy[u],tableau_energy[i])*Ti_spectre_final_teta_13[k][i];
+                double product_teta12=gauss_pdf(tableau_energy[u],tableau_energy[i])*Ti_spectre_final_teta_12[k][i];
+                double product_delta2_m21=gauss_pdf(tableau_energy[u],tableau_energy[i])*Ti_spectre_final_delta2_m21[k][i];
+                double product_delta2_m31_IH=gauss_pdf(tableau_energy[u],tableau_energy[i])*Ti_spectre_final_delta2_m31_IH[k][i];
+                double product_delta2_m31_NH=gauss_pdf(tableau_energy[u],tableau_energy[i])*Ti_spectre_final_delta2_m31_NH[k][i];
 
-            if(product_teta13>0 || product_teta12>0 || product_delta2_m21>0||product_delta2_m31_IH>0||product_delta2_m31_NH>0){
-            Ti_new_spectre_teta_13[k][u] +=product_teta13;
-            Ti_new_spectre_teta_12[k][u] +=product_teta12;
-            Ti_new_spectre_delta2_m21[k][u] +=product_delta2_m21;
-            Ti_new_spectre_delta2_m31_IH[k][u] +=product_delta2_m31_IH;
-            Ti_new_spectre_delta2_m31_NH[k][u]+=product_delta2_m31_NH;
+                if(product_teta13>0 || product_teta12>0 || product_delta2_m21>0||product_delta2_m31_IH>0||product_delta2_m31_NH>0){
+                    Ti_new_spectre_teta_13[k][u] +=product_teta13;
+                    Ti_new_spectre_teta_12[k][u] +=product_teta12;
+                    Ti_new_spectre_delta2_m21[k][u] +=product_delta2_m21;
+                    Ti_new_spectre_delta2_m31_IH[k][u] +=product_delta2_m31_IH;
+                    Ti_new_spectre_delta2_m31_NH[k][u]+=product_delta2_m31_NH;
+                }
             }
-           }
-           //printf("Ti_new_spectre_teta_13 vaut %g pour k vaut %d et u vaut %d \n", Ti_new_spectre_teta_13[k][u],k,u);
-           }
+        }
     }
+    
+
     double chi_teta13[N];
     double chi_teta12[N];
     double chi_delta2_m21[N];
@@ -509,172 +411,172 @@ int main()
         chi_delta2_m31_NH[u]=0;
 
         for(int i=0;i<size;i++){
-            if(tableau_energy[i]>1.8&&tableau_energy[i]<8.0){//cf article 1 p43
-                chi_teta13[u]+=pow(Ti_new_spectre_teta_13[50][i]-Ti_new_spectre_teta_13[u][i],2)/(Ti_new_spectre_teta_13[50][i]);
+            if(tableau_energy[i]>1.8&&tableau_energy[i]<8.0){
+                //On utilise la formule de Pearson pour le calcul de chi (équation (2.9) article [1])
+                chi_teta13[u]+=pow(Ti_new_spectre_teta_13[50][i]-Ti_new_spectre_teta_13[u][i],2)/(Ti_new_spectre_teta_13[50][i]); //l'indice de ligne 50 correspond à la valeur moyenne du paramètre 
                 chi_teta12[u]+=pow(Ti_new_spectre_teta_12[50][i]-Ti_new_spectre_teta_12[u][i],2)/(Ti_new_spectre_teta_12[50][i]);
                 chi_delta2_m21[u]+=pow(Ti_new_spectre_delta2_m21[50][i]-Ti_new_spectre_delta2_m21[u][i],2)/(Ti_new_spectre_delta2_m21[50][i]);
                 chi_delta2_m31_IH[u]+=pow(Ti_new_spectre_delta2_m31_IH[50][i]-Ti_new_spectre_delta2_m31_IH[u][i],2)/(Ti_new_spectre_delta2_m31_IH[50][i]);
                 chi_delta2_m31_NH[u]+=pow(Ti_new_spectre_delta2_m31_IH[50][i]-Ti_new_spectre_delta2_m31_NH[u][i],2)/(Ti_new_spectre_delta2_m31_IH[50][i]);
                 
-                // chi_delta2_m31_NH[u]+=pow(Ti_new_spectre_delta2_m31_IH[50][i]-Ti_new_spectre_delta2_m31_NH[u][i],2)/(Ti_new_spectre_delta2_m31_IH[50][i]);
-                }
+            }
         }
-        
+    }    
+    //On peut ensuite tracer chacune des fonctions chi pour chaques paramètres 
 
+    //Pour SIN^2(θ_{13})
+ 
+    FILE *gnuplotPipe6 = popen("gnuplot -persist", "w");
+    if (gnuplotPipe6 == NULL) {
+        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
+        return 1;
     }
+    fprintf(gnuplotPipe6, "set multiplot layout 2, 2 title 'Variation de Δχ^2'\n");
 
-     FILE *gnuplotPipe7 = popen("gnuplot -persist", "w");
+    // Affichage de SIN^2(θ_{13})
+    fprintf(gnuplotPipe6, "set xlabel 'SIN^2(θ_{13})'\n");
+    fprintf(gnuplotPipe6, "set ylabel 'Δχ^2'\n");
+    fprintf(gnuplotPipe6, "plot '-' with points title 'Δχ^2_{SIN^2(θ_{13})}'\n");
+    for (int i = 0; i < N; i++) {    
+        fprintf(gnuplotPipe6, "%g %g\n", T_sin2_teta_13_IH[i], chi_teta13[i]);
+    }
+    fprintf(gnuplotPipe6, "e\n");
+
+    // Affichage de SIN^2(θ_{12})
+    fprintf(gnuplotPipe6, "set xlabel 'SIN^2(θ_{12})'\n");
+    fprintf(gnuplotPipe6, "set ylabel 'Δχ^2'\n");
+    fprintf(gnuplotPipe6, "plot '-' with points title 'Δχ^2_{SIN^2(θ_{12})}'\n");
+    for (int i = 0; i < N; i++) {    
+        fprintf(gnuplotPipe6, "%g %g\n", T_sin2_teta_12[i], chi_teta12[i]);
+    }
+    fprintf(gnuplotPipe6, "e\n");
+
+    // Affichage de Δm^2_{21}
+    fprintf(gnuplotPipe6, "set xlabel 'Δm^2_{21}'\n");
+    fprintf(gnuplotPipe6, "set ylabel 'Δχ^2'\n");
+    fprintf(gnuplotPipe6, "plot '-' with points title 'Δχ^2_{Δm^2_{21}}'\n");
+    for (int i = 0; i < N; i++) {    
+        fprintf(gnuplotPipe6, "%g %g\n", T_delta2_m21[i], chi_delta2_m21[i]);
+    }
+    fprintf(gnuplotPipe6, "e\n");
+
+    // Affichage de Δm^2_{31}
+    fprintf(gnuplotPipe6, "set xlabel 'Δm^2_{31}'\n");
+    fprintf(gnuplotPipe6, "set ylabel 'Δχ^2'\n");
+    fprintf(gnuplotPipe6, "plot '-' with points title 'Δχ^2_{Δm^2_{31}}'\n");
+    for (int i = 0; i < N; i++) {   
+        fprintf(gnuplotPipe6, "%g %g\n",  T_delta2_m31_IH[i],chi_delta2_m31_IH[i]);
+    }
+    fprintf(gnuplotPipe6, "e\n");
+
+    fprintf(gnuplotPipe6, "unset multiplot\n");
+    fflush(gnuplotPipe6);
+
+
+    //On cherche ensuite à comparer la valeur de Δχ² en fonction de si l'on considère une certaine hierarchie de masse et si on en observe une autre:
+    //On reproduit la figure 2.8 de l'article [1]
+
+    FILE *gnuplotPipe7 = popen("gnuplot -persist", "w");
     if (gnuplotPipe7 == NULL) {
         fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
         return 1;
     }
-    fprintf(gnuplotPipe7, "set title 'évolution de delta chi'\n");
-    fprintf(gnuplotPipe7, "set xlabel 'delta13'\n");
-    fprintf(gnuplotPipe7, "set xrange [0.0190:0.0244]\n");
 
-    fprintf(gnuplotPipe7, "set ylabel 'deltachi'\n");
+    fprintf(gnuplotPipe7, "set title 'Comparaison des Δχ^2 '\n");
+    fprintf(gnuplotPipe7, "set xlabel 'Δm^2_{31}'\n");
 
-    fprintf(gnuplotPipe7, "plot '-' with linespoints title 'test'\n");
+    fprintf(gnuplotPipe7, "set ylabel 'Δχ^2'\n");
 
-    for (int i = 0; i < size; i++) {    
-        fprintf(gnuplotPipe7, "%g %g\n", T_sin2_teta_13[i], chi_teta13[i]);
+    fprintf(gnuplotPipe7, "plot '-' with points title 'Δχ^2_{Δm^2_{31}} False MH', '-' with points title 'Δχ^2_{Δm^2_{31}} True MH'\n");
+    
+    for (int i = 0; i < N; i++) {   
+        fprintf(gnuplotPipe7, "%g %g\n",  T_delta2_m31_IH[i],chi_delta2_m31_NH[i]);
     }
     fprintf(gnuplotPipe7, "e\n");
 
+    for (int i = 0; i < N; i++) {   
+        fprintf(gnuplotPipe7, "%g %g\n",  T_delta2_m31_IH[i],chi_delta2_m31_IH[i]);
+    }
+    fprintf(gnuplotPipe7, "e\n");
     fflush(gnuplotPipe7);
 
+    
+    //Pour finir nous allons essayer de retouver la figure 2.7 de l'article [1] qui permet de déterminer la distance optimale pour maximiser la différence des Δχ^2 True MH et False MH 
+    //Cette étape est la plus longue en terme de temps de calcul car elle nécessite de recalculer le Δχ^2 à chaque longueur 
+ 
+    double tab_min[50];
+    double tableau_longueur[50];
 
+    for(int i=0;i<50;i++){
+        tableau_longueur[i]=i*3e3; //on va de 0 à 150km par pas de 3km
+    }
 
-      FILE *gnuplotPipe8 = popen("gnuplot -persist", "w");
+for(int w=1;w<50;w++){//boucle sur la distance
+
+    for(int u=0;u<N;u++){
+    for(int i=0;i<size;i++){//on peut se concentrer sur 1 plot
+ 
+        Ti_spectre_final_delta2_m31_NH[u][i]=calcul_spectre_lenght(flux_total[i],tableau_energy[i], T_sin2_teta_13_NH[50], T_sin2_teta_12[50], T_sin2_teta_12[50], T_delta2_m32_NH[50], T_delta2_m31_NH[u],tableau_longueur[w] )*Np;
+        Ti_spectre_final_delta2_m31_IH[u][i]=calcul_spectre_lenght(flux_total[i],tableau_energy[i], T_sin2_teta_13_NH[50], T_sin2_teta_12[50], T_sin2_teta_12[50], T_delta2_m32_IH[50],T_delta2_m31_IH[u],tableau_longueur[w] )*Np;
+    }}
+
+    for(int k=0;k<N;k++){//boucle sur la variation du paramètre
+        for(int u=0;u<size;u++){//boucle sur l'énergie
+
+            Ti_new_spectre_delta2_m31_IH[k][u]=0;
+            Ti_new_spectre_delta2_m31_NH[k][u]=0;
+
+            for(int i = 0; i < size; i++){
+
+                double product_delta2_m31_IH=gauss_pdf(tableau_energy[u],tableau_energy[i])*Ti_spectre_final_delta2_m31_IH[k][i];
+                double product_delta2_m31_NH=gauss_pdf(tableau_energy[u],tableau_energy[i])*Ti_spectre_final_delta2_m31_NH[k][i];
+
+                if(product_delta2_m31_IH>0||product_delta2_m31_NH>0){
+                    Ti_new_spectre_delta2_m31_IH[k][u] +=product_delta2_m31_IH;
+                    Ti_new_spectre_delta2_m31_NH[k][u]+=product_delta2_m31_NH;
+                }
+            }
+        }
+    }
+    for(int u=0;u<N;u++){
+
+        //chi_delta2_m31_IH[u]=0;
+        chi_delta2_m31_NH[u]=0;
+
+        for(int i=0;i<size;i++){
+            if(tableau_energy[i]>1.8&&tableau_energy[i]<8.0){//cf article 1 p43
+                //chi_delta2_m31_IH[u]+=pow(Ti_new_spectre_delta2_m31_IH[50][i]-Ti_new_spectre_delta2_m31_IH[u][i],2)/(Ti_new_spectre_delta2_m31_IH[50][i]);
+                chi_delta2_m31_NH[u]+=pow(Ti_new_spectre_delta2_m31_IH[50][i]-Ti_new_spectre_delta2_m31_NH[u][i],2)/(Ti_new_spectre_delta2_m31_IH[50][i]);
+                }
+        }
+        
+
+    } 
+    tab_min[w]=trouverMinimum(chi_delta2_m31_NH,N); //-trouverMinimum(chi_delta2_m31_IH,N);
+    //tab_min[w]=chi_delta2_m31_NH[N/2];
+    printf("le min vaut %g pour L vaut %d km \n", tab_min[w],3*w);
+
+}
+    FILE *gnuplotPipe8 = popen("gnuplot -persist", "w");
     if (gnuplotPipe8 == NULL) {
         fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
         return 1;
     }
-    fprintf(gnuplotPipe8, "set title 'évolution de delta chi'\n");
-    fprintf(gnuplotPipe8, "set xlabel 'variation sin2(teta12)'\n");
-    fprintf(gnuplotPipe8, "set xrange [0.3055:0.3085]\n");
 
-    fprintf(gnuplotPipe8, "set ylabel 'deltachi'\n");
+    fprintf(gnuplotPipe8, "set title 'Δχ^2 en fonction de la distance'\n");
+    fprintf(gnuplotPipe8, "set xlabel 'Distance des réacteurs (km)'\n");
 
-    fprintf(gnuplotPipe8, "plot '-' with linespoints title 'graph'\n");
+    fprintf(gnuplotPipe8, "set ylabel 'Δχ^2'\n");
 
-    for (int i = 0; i < size; i++) {    
-        fprintf(gnuplotPipe8, "%g %g\n", T_sin2_teta_12[i], chi_teta12[i]);
-        //printf("T_sin2_teta_12[i] vaut à la fin %g et chi_teta12[i] %g \n", T_sin2_teta_12[i],chi_teta12[i]);
+    fprintf(gnuplotPipe8, "plot '-' with points title 'Δχ^2 en fonction de la distance'\n");
+    
+    for (int i = 0; i < 50; i++) {   
+        fprintf(gnuplotPipe8, "%g %g\n",  tableau_longueur[i]*1e-3,tab_min[i]);
     }
-    fprintf(gnuplotPipe8, "e\n");
 
+    fprintf(gnuplotPipe8, "e\n");
     fflush(gnuplotPipe8);
 
-
-      FILE *gnuplotPipe9 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe9 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
-    fprintf(gnuplotPipe9, "set title 'évolution de delta chi'\n");
-    fprintf(gnuplotPipe9, "set xlabel 'variation _delta2_m21'\n");
-    fprintf(gnuplotPipe9, "set xrange [7.25e-5:7.75e-5]\n");
-
-    fprintf(gnuplotPipe9, "set ylabel 'deltachi'\n");
-
-    fprintf(gnuplotPipe9, "plot '-' with linespoints title 'graph'\n");
-
-    for (int i = 0; i < size; i++) {    
-        fprintf(gnuplotPipe9, "%g %g\n",T_delta2_m21[i],chi_delta2_m21[i]);
-        //printf("T_sin2_teta_12[i] vaut à la fin %g et chi_teta12[i] %g \n", T_delta2_m21[i],chi_delta2_m21[i]);
-    }
-    fprintf(gnuplotPipe9, "e\n");
-
-    fflush(gnuplotPipe9);
-
- for (int i = 0; i < N; i++) {   
-        printf("chi_delta2_m31_IH vaut %g chi_delta2_m31_NH vaut %g et T_delta2_m31_IH vaut %g et T_delta2_m31_NH %g\n",chi_delta2_m31_IH[i], chi_delta2_m31_NH[i], T_delta2_m31_IH[i], T_delta2_m31_NH[i]);
-        }
-
-    FILE *gnuplotPipe10 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe10 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
-    fprintf(gnuplotPipe10, "set title 'évolution de delta chi inverted mass'\n");
-    fprintf(gnuplotPipe10, "set xlabel 'variation delta2 m31'\n");
-    //fprintf(gnuplotPipe10, "set xrange [2.38e-3:2.5e-3]\n");
-    //fprintf(gnuplotPipe10, "set xrange [0:2.5e-3]\n");
-
-    fprintf(gnuplotPipe10, "set ylabel 'deltachi'\n");
-
-fprintf(gnuplotPipe10, "plot '-' with points title 'chi delta2 m31 NH index 0','-' with points title 'chi delta2 m31 NH index 50' \n");
-
-    for (int i = 0; i < size; i++) {   
-
-        //fprintf(gnuplotPipe10, "%g %g\n",  T_delta2_m31_NH[i],chi_delta2_m31_IH[i]);
-        fprintf(gnuplotPipe10, "%g %g\n",  tableau_energy[i]-0.8,Ti_spectre_final_delta2_m31_NH[0][i]);
-
-        //printf("T_delta2_m32[i] vaut à la fin %g et chi_delta2_m32[i] %g \n", T_delta2_m32[i],chi_delta2_m32[i]);
-    }
-    fprintf(gnuplotPipe10, "e\n");
-        for (int i = 0; i < size; i++) {   
-
-        //fprintf(gnuplotPipe10, "%g %g\n",  T_delta2_m31_NH[i],chi_delta2_m31_IH[i]);
-        fprintf(gnuplotPipe10, "%g %g\n",  tableau_energy[i]-0.8,Ti_spectre_final_delta2_m31_NH[50][i]);
-
-        //printf("T_delta2_m32[i] vaut à la fin %g et chi_delta2_m32[i] %g \n", T_delta2_m32[i],chi_delta2_m32[i]);
-    }
-    fprintf(gnuplotPipe10, "e\n");
-
-    fflush(gnuplotPipe10);
-
-    FILE *gnuplotPipe11 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe11 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
-    fprintf(gnuplotPipe11, "set title 'comparaison de delta chi'\n");
-    fprintf(gnuplotPipe11, "set xlabel 'variation  delta2 m31'\n");
-    //fprintf(gnuplotPipe11, "set xrange [2.38e-3:2.5e-3]\n");
-    //fprintf(gnuplotPipe10, "set xrange [0:2.5e-3]\n");
-    //fprintf(gnuplotPipe11, "set xrange [2.38e-3:2.6e-3]\n");
-
-    fprintf(gnuplotPipe11, "set ylabel 'deltachi'\n");
-
-    fprintf(gnuplotPipe11, "plot '-' with linespoints title 'chi delta2 m31 NH', '-' with linespoints title 'chi delta2 m31 IH'\n");
-    
-    for (int i = 0; i < N; i++) {   
-        fprintf(gnuplotPipe11, "%g %g\n",  T_delta2_m31_IH[i],chi_delta2_m31_NH[i]);
-        //printf("T_delta2_m32[i] vaut à la fin %g et chi_delta2_m32[i] %g \n", T_delta2_m32[i],chi_delta2_m32[i]);
-    }
-    fprintf(gnuplotPipe11, "e\n");
-
-    for (int i = 0; i < N; i++) {   
-        fprintf(gnuplotPipe11, "%g %g\n",  T_delta2_m31_IH[i],chi_delta2_m31_IH[i]);
-        //printf("T_delta2_m32[i] vaut à la fin %g et chi_delta2_m32[i] %g \n", T_delta2_m32[i],chi_delta2_m32[i]);
-    }
-    fprintf(gnuplotPipe11, "e\n");
-
-    fflush(gnuplotPipe11);
-
-        FILE *gnuplotPipe12 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe12 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
-    fprintf(gnuplotPipe12, "set title 'Juno 6 years data datking test'\n");
-    fprintf(gnuplotPipe12, "set xlabel 'Deposited energy [MeV]'\n");
-    fprintf(gnuplotPipe12, "set ylabel 'Events number'\n");
-    fprintf(gnuplotPipe12, "set xrange [1:12]\n");
-
-    fprintf(gnuplotPipe12, "plot '-' using 1:2 with linespoints title '_teta_12=50'\n");
-
-    for (int i = 0; i < size; i++) {    
-        fprintf(gnuplotPipe12, "%g %g %g\n", tableau_energy[i]-0.8, Ti_spectre_final_teta_12[50][i]);
-        //mauvaise forme de spectre après convolution pour teta12
-        //manque de l'oscillation teta12
-    }
-    
-    
-    fprintf(gnuplotPipe12, "e\n");
-    fflush(gnuplotPipe12);
     // Attente de l'utilisateur avant de fermer la fenêtre Gnuplot
     printf("Appuyez sur Entrée pour fermer le graphique...\n");
     getchar();
@@ -688,82 +590,5 @@ fprintf(gnuplotPipe10, "plot '-' with points title 'chi delta2 m31 NH index 0','
     fclose(gnuplotPipe6);
     fclose(gnuplotPipe7);
     fclose(gnuplotPipe8);
-    fclose(gnuplotPipe9);
-    fclose(gnuplotPipe10);
-    fclose(gnuplotPipe11);
-    fclose(gnuplotPipe12);
-
-   
-    printf("Le minimum de chi_delta2_m31_NH est %g \n", trouverMinimum(chi_delta2_m31_NH,N));
-    
-    
-    double tab_min[50];
-    double tableau_longueur[50];
-
-    for(int i=0;i<50;i++){
-        tableau_longueur[i]=i*3e3;
-    }
-
-
-//    double Ti_spectre_final_delta2_m31_IH[N][size];
-//    double Ti_spectre_final_delta2_m31_NH[N][size];
-
-for(int w=0;w<50;w++){
-
-    for(int u=0;u<N;u++){
-    for(int i=0;i<size;i++){//on peut se concentrer sur 1 plot
-        // Ti_spectre_final_delta2_m31_IH[u][i]=calcul_spectre_lenght(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32[50], 'I',-T_delta2_m31_IH[u],tableau_longueur[w] )*Np;
-        // Ti_spectre_final_delta2_m31_NH[u][i]=calcul_spectre_lenght(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32[50], 'N',T_delta2_m31_NH[u],tableau_longueur[w])*Np;
-        Ti_spectre_final_delta2_m31_NH[u][i]=calcul_spectre_lenght(flux_total[i],tableau_energy[i], 2.34e-2, 3.08e-1, 7.54e-5, 2.4e-3, 'N', T_delta2_m31_NH[u],tableau_longueur[w] )*Np;
-        Ti_spectre_final_delta2_m31_IH[u][i]=calcul_spectre_lenght(flux_total[i],tableau_energy[i], 2.4e-2, 3.08e-1, 7.54e-5, 2.5e-3, 'I',T_delta2_m31_IH[u],tableau_longueur[w] )*Np;
-    }}
-
-//    double Ti_new_spectre_delta2_m31_IH[N][size];
-//    double Ti_new_spectre_delta2_m31_NH[N][size];
-
-    for(int k=0;k<N;k++){
-    for(int u=0;u<size;u++){
-
-        Ti_new_spectre_delta2_m31_IH[k][u]=0;
-        Ti_new_spectre_delta2_m31_NH[k][u]=0;
-
-        for(int i = 0; i < size; i++){
-
-            double product_delta2_m31_IH=gauss_pdf(tableau_energy[u],tableau_energy[i])*Ti_spectre_final_delta2_m31_IH[k][i];
-            double product_delta2_m31_NH=gauss_pdf(tableau_energy[u],tableau_energy[i])*Ti_spectre_final_delta2_m31_NH[k][i];
-
-            if(product_delta2_m31_IH>0||product_delta2_m31_NH>0){
-            Ti_new_spectre_delta2_m31_IH[k][u] +=product_delta2_m31_IH;
-            Ti_new_spectre_delta2_m31_NH[k][u]+=product_delta2_m31_NH;
-            }
-           }
-           //printf("Ti_new_spectre_teta_13 vaut %g pour k vaut %d et u vaut %d \n", Ti_new_spectre_teta_13[k][u],k,u);
-           }
-    }
-
-//    double chi_delta2_m31_IH[N];
-//    double chi_delta2_m31_NH[N];
-
-    for(int u=0;u<N;u++){
-
-        chi_delta2_m31_IH[u]=0;
-        chi_delta2_m31_NH[u]=0;
-
-        for(int i=0;i<size;i++){
-            if(tableau_energy[i]>1.8&&tableau_energy[i]<8.0){//cf article 1 p43
-                chi_delta2_m31_IH[u]+=pow(Ti_new_spectre_delta2_m31_IH[50][i]-Ti_new_spectre_delta2_m31_IH[u][i],2)/(Ti_new_spectre_delta2_m31_IH[50][i]);
-                chi_delta2_m31_NH[u]+=pow(Ti_new_spectre_delta2_m31_IH[50][i]-Ti_new_spectre_delta2_m31_NH[u][i],2)/(Ti_new_spectre_delta2_m31_IH[50][i]);
-                }
-        }
-        
-
-    } 
-    //tab_min[w]=trouverMinimum(chi_delta2_m31_NH,N)-trouverMinimum(chi_delta2_m31_IH,N);
-    tab_min[w]=chi_delta2_m31_NH[N/2];
-    printf("le min vaut %g pour L vaut %d km \n", tab_min[w],3*w);
-
-}
-
-
     return 0;
 }
