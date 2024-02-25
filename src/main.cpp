@@ -58,10 +58,13 @@ int main()
 
     double delta2_m21=7.5e-5;//valeur absolue
     double delta2_m32=2.4e-3;//on peut aussi faire simplmement un changement de signe
+    double delta2_m32_IH=2.4e-3+delta2_m21;//on peut aussi faire simplmement un changement de signe
+
     //double delta2_m31=2.53e-3;
 
     double delta2_m31_NH=delta2_m32+delta2_m21;
     double delta2_m31_IH=delta2_m32-delta2_m21;
+    double delta2_m31_moy=2.52e-3;
 
     int N=100;
 
@@ -69,6 +72,7 @@ int main()
     double T_delta2_m32[N];
     double T_delta2_m31_NH[N];
     double T_delta2_m31_IH[N];
+    double T_delta2_m31_moy[N];
 
     double T_sin2_teta_12[N];
     double T_sin2_teta_13[N];
@@ -78,8 +82,13 @@ int main()
         T_delta2_m32[j]=delta2_m32+1e-3*(j-(N/2))/10638;//50/0.0047=10638       //il faut balayer plus de valeur pour arriver jusqu'à dchi²=1
         //T_delta2_m31_NH[j]=delta2_m31_NH+1e-3*(j-(N/2))/10638;//50/0.0047=10638
         //T_delta2_m31_IH[j]=-(delta2_m31_IH+1e-3*(j-(N/2))/10638);//50/0.0047=10638
-        T_delta2_m31_NH[j]=delta2_m31_NH+1e-3*(j-(N/2))/500;//50/0.0047=10638
-        T_delta2_m31_IH[j]=-(delta2_m31_IH+1e-3*(j-(N/2))/800);//50/0.0047=10638
+        // T_delta2_m31_NH[j]=delta2_m31_NH+1e-3*(j-(N/2))/500;//50/0.0047=10638
+        // T_delta2_m31_IH[j]=(delta2_m31_IH+1e-3*(j-(N/2))/500);//50/0.0047=10638
+       T_delta2_m31_NH[j]=2.47e-3+1e-3*(j-(N/2))/1000;//50/0.0047=10638
+        T_delta2_m31_IH[j]=(2.42e-3+1e-3*(j-(N/2))/1000);//50/0.0047=10638
+
+        T_delta2_m31_moy[j]=(delta2_m31_moy+1e-3*(j-(N/2))/800);//50/0.0047=10638
+
         T_sin2_teta_12[j]=pow(sin(teta_12),2)+1.0*(j-(N/2))/31250;//50/0.0016=31250
         T_sin2_teta_13[j]=pow(sin(teta_13),2)+1.0*(j-(N/2))/19231;//50/0.0026=19231
         printf("T_delta2_m31_IH vaut %g et T_delta2_m31_NH vaut %g \n", T_delta2_m31_IH[j],T_delta2_m31_NH[j]);
@@ -446,8 +455,10 @@ int main()
         //Ti_spectre_final_teta_12[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[u], T_delta2_m21[50], T_delta2_m32[50], 'I',delta2_m31_IH)*Np;
 
         Ti_spectre_final_delta2_m21[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[50], T_delta2_m21[u], T_delta2_m32[50], 'I',delta2_m31_IH)*Np;
-        Ti_spectre_final_delta2_m31_IH[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32[50], 'I',T_delta2_m31_IH[u])*Np;
-        Ti_spectre_final_delta2_m31_NH[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32[50], 'N',T_delta2_m31_NH[u])*Np;
+        // Ti_spectre_final_delta2_m31_IH[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32[50], 'I',T_delta2_m31_IH[u])*Np;
+        // Ti_spectre_final_delta2_m31_NH[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32[50], 'N', T_delta2_m31_NH[u])*Np;
+        Ti_spectre_final_delta2_m31_NH[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], 2.34e-2, 3.08e-1, 7.54e-5, 2.4e-3, 'N', T_delta2_m31_NH[u])*Np;
+        Ti_spectre_final_delta2_m31_IH[u][i]=calcul_spectre(flux_total[i],tableau_energy[i], 2.4e-2, 3.08e-1, 7.54e-5, 2.5e-3, 'I',T_delta2_m31_IH[u])*Np;
 
     }}
 
@@ -504,6 +515,8 @@ int main()
                 chi_delta2_m21[u]+=pow(Ti_new_spectre_delta2_m21[50][i]-Ti_new_spectre_delta2_m21[u][i],2)/(Ti_new_spectre_delta2_m21[50][i]);
                 chi_delta2_m31_IH[u]+=pow(Ti_new_spectre_delta2_m31_IH[50][i]-Ti_new_spectre_delta2_m31_IH[u][i],2)/(Ti_new_spectre_delta2_m31_IH[50][i]);
                 chi_delta2_m31_NH[u]+=pow(Ti_new_spectre_delta2_m31_IH[50][i]-Ti_new_spectre_delta2_m31_NH[u][i],2)/(Ti_new_spectre_delta2_m31_IH[50][i]);
+                
+                // chi_delta2_m31_NH[u]+=pow(Ti_new_spectre_delta2_m31_IH[50][i]-Ti_new_spectre_delta2_m31_NH[u][i],2)/(Ti_new_spectre_delta2_m31_IH[50][i]);
                 }
         }
         
@@ -575,8 +588,8 @@ int main()
 
     fflush(gnuplotPipe9);
 
- for (int i = 0; i < size; i++) {   
-        printf("chi_delta2_m31_NH vaut %g et i vaut %d et tableau energy %g\n", chi_delta2_m31_NH[i], i, tableau_energy[i]-0.8);
+ for (int i = 0; i < N; i++) {   
+        printf("chi_delta2_m31_IH vaut %g chi_delta2_m31_NH vaut %g et T_delta2_m31_IH vaut %g et T_delta2_m31_NH %g\n",chi_delta2_m31_IH[i], chi_delta2_m31_NH[i], T_delta2_m31_IH[i], T_delta2_m31_NH[i]);
         }
 
     FILE *gnuplotPipe10 = popen("gnuplot -persist", "w");
@@ -591,9 +604,17 @@ int main()
 
     fprintf(gnuplotPipe10, "set ylabel 'deltachi'\n");
 
-fprintf(gnuplotPipe10, "plot '-' with points title 'chi delta2 m31 IH'\n");
+fprintf(gnuplotPipe10, "plot '-' with points title 'chi delta2 m31 NH index 0','-' with points title 'chi delta2 m31 NH index 50' \n");
 
-    for (int i = 100; i < size; i++) {   
+    for (int i = 0; i < size; i++) {   
+
+        //fprintf(gnuplotPipe10, "%g %g\n",  T_delta2_m31_NH[i],chi_delta2_m31_IH[i]);
+        fprintf(gnuplotPipe10, "%g %g\n",  tableau_energy[i]-0.8,Ti_spectre_final_delta2_m31_NH[0][i]);
+
+        //printf("T_delta2_m32[i] vaut à la fin %g et chi_delta2_m32[i] %g \n", T_delta2_m32[i],chi_delta2_m32[i]);
+    }
+    fprintf(gnuplotPipe10, "e\n");
+        for (int i = 0; i < size; i++) {   
 
         //fprintf(gnuplotPipe10, "%g %g\n",  T_delta2_m31_NH[i],chi_delta2_m31_IH[i]);
         fprintf(gnuplotPipe10, "%g %g\n",  tableau_energy[i]-0.8,Ti_spectre_final_delta2_m31_NH[50][i]);
@@ -601,6 +622,7 @@ fprintf(gnuplotPipe10, "plot '-' with points title 'chi delta2 m31 IH'\n");
         //printf("T_delta2_m32[i] vaut à la fin %g et chi_delta2_m32[i] %g \n", T_delta2_m32[i],chi_delta2_m32[i]);
     }
     fprintf(gnuplotPipe10, "e\n");
+
     fflush(gnuplotPipe10);
 
     FILE *gnuplotPipe11 = popen("gnuplot -persist", "w");
@@ -612,20 +634,20 @@ fprintf(gnuplotPipe10, "plot '-' with points title 'chi delta2 m31 IH'\n");
     fprintf(gnuplotPipe11, "set xlabel 'variation  delta2 m31'\n");
     //fprintf(gnuplotPipe11, "set xrange [2.38e-3:2.5e-3]\n");
     //fprintf(gnuplotPipe10, "set xrange [0:2.5e-3]\n");
-    fprintf(gnuplotPipe11, "set xrange [2.38e-3:2.6e-3]\n");
+    //fprintf(gnuplotPipe11, "set xrange [2.38e-3:2.6e-3]\n");
 
     fprintf(gnuplotPipe11, "set ylabel 'deltachi'\n");
 
     fprintf(gnuplotPipe11, "plot '-' with linespoints title 'chi delta2 m31 NH', '-' with linespoints title 'chi delta2 m31 IH'\n");
     
     for (int i = 0; i < N; i++) {   
-        fprintf(gnuplotPipe11, "%g %g\n",  T_delta2_m31_NH[i],chi_delta2_m31_NH[i]);
+        fprintf(gnuplotPipe11, "%g %g\n",  T_delta2_m31_IH[i],chi_delta2_m31_NH[i]);
         //printf("T_delta2_m32[i] vaut à la fin %g et chi_delta2_m32[i] %g \n", T_delta2_m32[i],chi_delta2_m32[i]);
     }
     fprintf(gnuplotPipe11, "e\n");
 
     for (int i = 0; i < N; i++) {   
-        fprintf(gnuplotPipe11, "%g %g\n",  T_delta2_m31_NH[i],chi_delta2_m31_IH[i] );
+        fprintf(gnuplotPipe11, "%g %g\n",  T_delta2_m31_IH[i],chi_delta2_m31_IH[i]);
         //printf("T_delta2_m32[i] vaut à la fin %g et chi_delta2_m32[i] %g \n", T_delta2_m32[i],chi_delta2_m32[i]);
     }
     fprintf(gnuplotPipe11, "e\n");
@@ -690,9 +712,10 @@ for(int w=0;w<50;w++){
 
     for(int u=0;u<N;u++){
     for(int i=0;i<size;i++){//on peut se concentrer sur 1 plot
-        Ti_spectre_final_delta2_m31_IH[u][i]=calcul_spectre_lenght(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32[50], 'I',T_delta2_m31_IH[u],tableau_longueur[w] )*Np;
-        Ti_spectre_final_delta2_m31_NH[u][i]=calcul_spectre_lenght(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32[50], 'N',T_delta2_m31_NH[u],tableau_longueur[w])*Np;
-
+        // Ti_spectre_final_delta2_m31_IH[u][i]=calcul_spectre_lenght(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32[50], 'I',-T_delta2_m31_IH[u],tableau_longueur[w] )*Np;
+        // Ti_spectre_final_delta2_m31_NH[u][i]=calcul_spectre_lenght(flux_total[i],tableau_energy[i], T_sin2_teta_13[50], T_sin2_teta_12[50], T_delta2_m21[50], T_delta2_m32[50], 'N',T_delta2_m31_NH[u],tableau_longueur[w])*Np;
+        Ti_spectre_final_delta2_m31_NH[u][i]=calcul_spectre_lenght(flux_total[i],tableau_energy[i], 2.34e-2, 3.08e-1, 7.54e-5, 2.4e-3, 'N', T_delta2_m31_NH[u],tableau_longueur[w] )*Np;
+        Ti_spectre_final_delta2_m31_IH[u][i]=calcul_spectre_lenght(flux_total[i],tableau_energy[i], 2.4e-2, 3.08e-1, 7.54e-5, 2.5e-3, 'I',T_delta2_m31_IH[u],tableau_longueur[w] )*Np;
     }}
 
 //    double Ti_new_spectre_delta2_m31_IH[N][size];
@@ -735,8 +758,9 @@ for(int w=0;w<50;w++){
         
 
     } 
-    tab_min[w]=trouverMinimum(chi_delta2_m31_NH,N);
-    printf("le min vaut %g pour i w vaut %d \n", tab_min[w],w);
+    //tab_min[w]=trouverMinimum(chi_delta2_m31_NH,N)-trouverMinimum(chi_delta2_m31_IH,N);
+    tab_min[w]=chi_delta2_m31_NH[N/2];
+    printf("le min vaut %g pour L vaut %d km \n", tab_min[w],3*w);
 
 }
 
