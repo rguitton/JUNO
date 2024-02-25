@@ -1,5 +1,3 @@
-/src/tmp.C
-/src/comp.cxx
-/src/plotter_flux.C
-/src/plotter_spectra.C
+/bin/
 /build/
+/src/tmp.cpp
