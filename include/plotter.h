@@ -21,6 +21,8 @@ void plotter_visible_energy_spectrum_six_years(int size, const double* xaxis, co
 
 void plotter_chi2(int nPoint, int nx, int ny, const double** all_xaxis, const double** all_yaxis, const char* dir);
 
+void plotter_chi2_MH(int nPoint, const double** all_xaxis, const double** all_yaxis, const char* dir);
 
+void plotter_ch2_Distance(int size, const double* xaxis, const double* yaxis,const char* dir);
 
 #endif

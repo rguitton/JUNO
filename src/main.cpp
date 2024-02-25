@@ -101,7 +101,7 @@ int main()
     double sigma_teta13=0.0026;
     double sigma_m21=0.024;
 
-    double 
+   
     for(int j=0;j<N;j++){
         T_delta2_m21[j]=delta2_m21+1e-5*(j-(N/2))/(N/2)*sigma_m21;
 
@@ -328,88 +328,16 @@ int main()
     }    
     //On peut ensuite tracer chacune des fonctions chi pour chaques paramètres 
 
-    //Pour SIN^2(θ_{13})
- 
-    FILE *gnuplotPipe6 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe6 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
-    fprintf(gnuplotPipe6, "set multiplot layout 2, 2 title 'Variation de Δχ^2'\n");
-
-    // Affichage de SIN^2(θ_{13})
-    fprintf(gnuplotPipe6, "set xlabel 'SIN^2(θ_{13})'\n");
-    fprintf(gnuplotPipe6, "set ylabel 'Δχ^2'\n");
-    fprintf(gnuplotPipe6, "plot '-' with points title 'Δχ^2_{SIN^2(θ_{13})}'\n");
-    for (int i = 0; i < N; i++) {    
-        fprintf(gnuplotPipe6, "%g %g\n", T_sin2_teta_13_IH[i], chi_teta13[i]);
-    }
-    fprintf(gnuplotPipe6, "e\n");
-
-    // Affichage de SIN^2(θ_{12})
-    fprintf(gnuplotPipe6, "set xlabel 'SIN^2(θ_{12})'\n");
-    fprintf(gnuplotPipe6, "set ylabel 'Δχ^2'\n");
-    fprintf(gnuplotPipe6, "plot '-' with points title 'Δχ^2_{SIN^2(θ_{12})}'\n");
-    for (int i = 0; i < N; i++) {    
-        fprintf(gnuplotPipe6, "%g %g\n", T_sin2_teta_12[i], chi_teta12[i]);
-    }
-    fprintf(gnuplotPipe6, "e\n");
-
-    // Affichage de Δm^2_{21}
-    fprintf(gnuplotPipe6, "set xlabel 'Δm^2_{21}'\n");
-    fprintf(gnuplotPipe6, "set ylabel 'Δχ^2'\n");
-    fprintf(gnuplotPipe6, "plot '-' with points title 'Δχ^2_{Δm^2_{21}}'\n");
-    for (int i = 0; i < N; i++) {    
-        fprintf(gnuplotPipe6, "%g %g\n", T_delta2_m21[i], chi_delta2_m21[i]);
-    }
-    fprintf(gnuplotPipe6, "e\n");
-
-    // Affichage de Δm^2_{31}
-    fprintf(gnuplotPipe6, "set xlabel 'Δm^2_{31}'\n");
-    fprintf(gnuplotPipe6, "set ylabel 'Δχ^2'\n");
-    fprintf(gnuplotPipe6, "plot '-' with points title 'Δχ^2_{Δm^2_{31}}'\n");
-    for (int i = 0; i < N; i++) {   
-        fprintf(gnuplotPipe6, "%g %g\n",  T_delta2_m31_IH[i],chi_delta2_m31_IH[i]);
-    }
-    fprintf(gnuplotPipe6, "e\n");
-
-    fprintf(gnuplotPipe6, "unset multiplot\n");
-    fflush(gnuplotPipe6);
-
-    //#######
     const double* tab_xaxis[4] ={T_sin2_teta_13_IH, T_sin2_teta_12, T_delta2_m21, T_delta2_m31_IH};
     const double* tab_yaxis[4] ={chi_teta13, chi_teta12,chi_delta2_m21, chi_delta2_m31_IH};
     plotter_chi2(N,2,2,tab_xaxis,tab_yaxis,dir);
 
-
-
-
     //On cherche ensuite à comparer la valeur de Δχ² en fonction de si l'on considère une certaine hierarchie de masse et si on en observe une autre:
     //On reproduit la figure 2.8 de l'article [1]
 
-    FILE *gnuplotPipe7 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe7 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
-
-    fprintf(gnuplotPipe7, "set title 'Comparaison des Δχ^2 '\n");
-    fprintf(gnuplotPipe7, "set xlabel 'Δm^2_{31}'\n");
-
-    fprintf(gnuplotPipe7, "set ylabel 'Δχ^2'\n");
-
-    fprintf(gnuplotPipe7, "plot '-' with points title 'Δχ^2_{Δm^2_{31}} False MH', '-' with points title 'Δχ^2_{Δm^2_{31}} True MH'\n");
-    
-    for (int i = 0; i < N; i++) {   
-        fprintf(gnuplotPipe7, "%g %g\n",  T_delta2_m31_IH[i],chi_delta2_m31_NH[i]);
-    }
-    fprintf(gnuplotPipe7, "e\n");
-
-    for (int i = 0; i < N; i++) {   
-        fprintf(gnuplotPipe7, "%g %g\n",  T_delta2_m31_IH[i],chi_delta2_m31_IH[i]);
-    }
-    fprintf(gnuplotPipe7, "e\n");
-    fflush(gnuplotPipe7);
+    const double* new_tab_xaxis[2] ={T_delta2_m31_IH,T_delta2_m31_IH};
+    const double* new_tab_yaxis[2] ={chi_delta2_m31_NH,chi_delta2_m31_IH};
+    plotter_chi2_MH(N,new_tab_xaxis,new_tab_yaxis,dir);
 
     
     //Pour finir nous allons essayer de retouver la figure 2.7 de l'article [1] qui permet de déterminer la distance optimale pour maximiser la différence des Δχ^2 True MH et False MH 
@@ -468,35 +396,11 @@ for(int w=1;w<50;w++){//boucle sur la distance
     printf("le min vaut %g pour L vaut %d km \n", tab_min[w],3*w);
 
 }
-    FILE *gnuplotPipe8 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe8 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
 
-    fprintf(gnuplotPipe8, "set title 'Δχ^2 en fonction de la distance'\n");
-    fprintf(gnuplotPipe8, "set xlabel 'Distance des réacteurs (km)'\n");
-
-    fprintf(gnuplotPipe8, "set ylabel 'Δχ^2'\n");
-
-    fprintf(gnuplotPipe8, "plot '-' with points title 'Δχ^2 en fonction de la distance'\n");
-    
-    for (int i = 0; i < 50; i++) {   
-        fprintf(gnuplotPipe8, "%g %g\n",  tableau_longueur[i]*1e-3,tab_min[i]);
-    }
-
-    fprintf(gnuplotPipe8, "e\n");
-    fflush(gnuplotPipe8);
-
+    plotter_ch2_Distance(50,tableau_longueur,tab_min,dir);
     // Attente de l'utilisateur avant de fermer la fenêtre Gnuplot
-    printf("Appuyez sur Entrée pour fermer le graphique...\n");
-    getchar();
-
-    // Fermeture du pipe Gnuplot
-
-
-    fclose(gnuplotPipe6);
-    fclose(gnuplotPipe7);
-    fclose(gnuplotPipe8);
+    printf("Veuillez patienter environ 4 minutes pour le dernier graph...\n");
+    
     return 0;
 }
+

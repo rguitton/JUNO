@@ -370,6 +370,8 @@ void plotter_chi2(int nPoint, int nx, int ny, const double** all_xaxis, const do
 	g0->SetLineStyle(1);
 	g0->GetXaxis()->SetTitleSize(0.045);
 	g0->GetYaxis()->SetTitleSize(0.05);
+	g0->GetXaxis()->SetLabelSize(0.04);
+	g0->GetYaxis()->SetLabelSize(0.04);
 	g0->GetXaxis()->SetTickSize(0.02);
 	g0->GetYaxis()->SetTickSize(0.015);
 	g0->GetXaxis()->SetDecimals();
@@ -387,6 +389,8 @@ void plotter_chi2(int nPoint, int nx, int ny, const double** all_xaxis, const do
 	g1->SetLineStyle(1);
 	g1->GetXaxis()->SetTitleSize(0.045);
 	g1->GetYaxis()->SetTitleSize(0.05);
+	g1->GetXaxis()->SetLabelSize(0.04);
+	g1->GetYaxis()->SetLabelSize(0.04);
 	g1->GetXaxis()->SetTickSize(0.02);
 	g1->GetYaxis()->SetTickSize(0.015);
 	g1->GetXaxis()->SetDecimals();
@@ -403,6 +407,8 @@ void plotter_chi2(int nPoint, int nx, int ny, const double** all_xaxis, const do
 	g2->SetLineStyle(1);
 	g2->GetXaxis()->SetTitleSize(0.045);
 	g2->GetYaxis()->SetTitleSize(0.05);
+	g2->GetXaxis()->SetLabelSize(0.04);
+	g2->GetYaxis()->SetLabelSize(0.04);
 	g2->GetXaxis()->SetTickSize(0.02);
 	g2->GetYaxis()->SetTickSize(0.015);
 	g2->GetXaxis()->SetDecimals();
@@ -419,6 +425,8 @@ void plotter_chi2(int nPoint, int nx, int ny, const double** all_xaxis, const do
 	g3->SetLineStyle(1);
 	g3->GetXaxis()->SetTitleSize(0.045);
 	g3->GetYaxis()->SetTitleSize(0.05);
+	g3->GetXaxis()->SetLabelSize(0.04);
+	g3->GetYaxis()->SetLabelSize(0.04);
 	g3->GetXaxis()->SetTickSize(0.02);
 	g3->GetYaxis()->SetTickSize(0.015);
 	g3->GetXaxis()->SetDecimals();
@@ -427,6 +435,88 @@ void plotter_chi2(int nPoint, int nx, int ny, const double** all_xaxis, const do
 
 	// Sauvegarde du fichier
 	c->Print(TString::Format("%schi2_variation.pdf",dir));
+	//c->Print(TString::Format("%svisible_energy_spectrum.png",dir));
+	c->Close();
+}
+
+
+void plotter_chi2_MH(int nPoint, const double** all_xaxis, const double** all_yaxis, const char* dir){
+	TCanvas *c = new TCanvas("ch2_MH","ch2_MH",1366,768);
+	c->SetTickx();
+	c->SetTicky();
+
+	// Plot 1
+	TGraphErrors g_tmp0;
+	fillGraphIgnoringNaN(g_tmp0,all_xaxis[0],all_yaxis[0],0,0,nPoint);
+	TGraphErrors *g0 = new TGraphErrors(g_tmp0);
+	g0->SetTitle(";#Delta m^{2}_{31};#Delta #chi^{2}");
+	g0->SetMarkerStyle(1);
+	g0->SetLineColor(kBlack);
+	g0->SetLineStyle(1);
+	g0->GetXaxis()->SetTitleSize(0.045);
+	g0->GetYaxis()->SetTitleSize(0.05);
+	//g0->GetXaxis()->SetLabelSize(0.04);
+	//g0->GetYaxis()->SetLabelSize(0.04);
+	g0->GetXaxis()->SetTickSize(0.02);
+	g0->GetYaxis()->SetTickSize(0.015);
+	g0->GetXaxis()->SetDecimals();
+	g0->GetYaxis()->SetRangeUser(0,0.06);
+	g0->Draw("APL"); c->Update();
+
+	// Plot 2
+	TGraphErrors g_tmp1;
+	fillGraphIgnoringNaN(g_tmp1,all_xaxis[1],all_yaxis[1],0,0,nPoint);
+	TGraphErrors *g1 = new TGraphErrors(g_tmp1);
+	//g0->SetTitle(";#Delta m^{2}_{31};#Delta #chi^{2}");
+	g1->SetMarkerStyle(1);
+	g1->SetLineColor(kRed);
+	g1->SetLineStyle(1);
+	g1->GetXaxis()->SetTitleSize(0.045);
+	g1->GetYaxis()->SetTitleSize(0.05);
+	//g1->GetXaxis()->SetLabelSize(0.04);
+	//g1->GetYaxis()->SetLabelSize(0.04);
+	g1->GetXaxis()->SetTickSize(0.02);
+	g1->GetYaxis()->SetTickSize(0.015);
+	g1->GetXaxis()->SetDecimals();
+	g1->Draw("SAME"); c->Update();
+
+	// legend
+	auto legend = new TLegend(0.11,0.15,0.2,0.2);
+	legend->SetFillColor(0);
+	//legend->SetHeader("The Legend Title","C"); // option "C" allows to center the header
+	legend->AddEntry(g0,"False MH","lpf");
+	legend->AddEntry(g1,"True MH","lpf");
+	legend->Draw("SAME"); gPad->Update();
+
+	// Sauvegarde du fichier
+	c->Print(TString::Format("%schi2_MH.pdf",dir));
+	//c->Print(TString::Format("%svisible_energy_spectrum.png",dir));
+	c->Close();
+
+}
+
+
+void plotter_ch2_Distance(int size, const double* xaxis, const double* yaxis,const char* dir){
+	TCanvas *c = new TCanvas("ch2_Distance","ch2_Distance",1366,768);
+	c->SetTickx();
+	c->SetTicky();
+
+	//TGraphErrors *g = new TGraphErrors(size,xaxis,yaxis);
+	TGraphErrors g_tmp;
+	fillGraphIgnoringNaN(g_tmp,xaxis,yaxis,0,0,size);
+	TGraphErrors *g = new TGraphErrors(g_tmp);
+	g->SetTitle(";Lenght L (km);#Delta #chi^{2}");
+	g->SetMarkerStyle(1);
+	g->SetLineColor(kBlack);
+	g->SetLineStyle(1);
+	g->GetXaxis()->SetTitleSize(0.045);
+	g->GetYaxis()->SetTitleSize(0.05);
+	g->GetXaxis()->SetTickSize(0.02);
+	g->GetYaxis()->SetTickSize(0.015);
+	g->GetXaxis()->SetDecimals();
+	g->Draw("APL"); gPad->Update();
+
+	c->Print(TString::Format("%schi2_Lenght.pdf",dir));
 	//c->Print(TString::Format("%svisible_energy_spectrum.png",dir));
 	c->Close();
 }
