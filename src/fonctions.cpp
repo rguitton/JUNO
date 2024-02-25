@@ -104,7 +104,7 @@ double standart_dev(double E){
 double gauss_pdf(double E, double Ei)
 {   
     double mu=standart_dev(E);
-	return 1.0 / (standart_dev(E) * sqrt(2.0 * M_PI)) * exp(-(pow((E-Ei)/standart_dev(E), 2)/2.0));
+	return 1.0 / (mu * sqrt(2.0 * M_PI)) * exp(-(pow((E-Ei)/mu, 2)/2.0));
 }
 
 
