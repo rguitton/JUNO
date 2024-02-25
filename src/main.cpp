@@ -229,27 +229,6 @@ int main()
 
     //On trace le même spectre mais en considérant une periode de 6 ans 
 
-    FILE *gnuplotPipe5 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe5 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
-    fprintf(gnuplotPipe5, "set title 'Juno 6 years data datking'\n");
-    fprintf(gnuplotPipe5, "set xlabel 'Visible energy [MeV]'\n");
-    fprintf(gnuplotPipe5, "set ylabel 'Events number'\n");
-    fprintf(gnuplotPipe5, "set xrange [1:12]\n");
-
-    fprintf(gnuplotPipe5, "plot '-' with points title 'IH' \n");
-
-    for (int i = 0; i < size; i++) {    
-        fprintf(gnuplotPipe5, "%g %g\n", tableau_energy[i]-0.8, Np*new_spectre[i]*3600*24*365*6/10000);
-    }
-    
-    
-    fprintf(gnuplotPipe5, "e\n");
-
-    fflush(gnuplotPipe5);
-
 	for (int i=0;i<size;i++){
         tmpx[i]=tableau_energy[i]-0.8;
 		tmpy[i]= Np*new_spectre[i]*3600*24*365*6/10000;
@@ -392,6 +371,13 @@ int main()
     fprintf(gnuplotPipe6, "unset multiplot\n");
     fflush(gnuplotPipe6);
 
+    //#######
+    const double* tab_xaxis[4] ={T_sin2_teta_13_IH, T_sin2_teta_12, T_delta2_m21, T_delta2_m31_IH};
+    const double* tab_yaxis[4] ={chi_teta13, chi_teta12,chi_delta2_m21, chi_delta2_m31_IH};
+    plotter_chi2(N,2,2,tab_xaxis,tab_yaxis,dir);
+
+
+
 
     //On cherche ensuite à comparer la valeur de Δχ² en fonction de si l'on considère une certaine hierarchie de masse et si on en observe une autre:
     //On reproduit la figure 2.8 de l'article [1]
@@ -504,8 +490,6 @@ for(int w=1;w<50;w++){//boucle sur la distance
     // Fermeture du pipe Gnuplot
 
 
-    //fclose(gnuplotPipe4);
-    fclose(gnuplotPipe5);
     fclose(gnuplotPipe6);
     fclose(gnuplotPipe7);
     fclose(gnuplotPipe8);

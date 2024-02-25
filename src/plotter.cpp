@@ -351,3 +351,82 @@ void plotter_visible_energy_spectrum_six_years(int size, const double* xaxis, co
 	//c->Print(TString::Format("%svisible_energy_spectrum.png",dir));
 	c->Close();
 }
+
+void plotter_chi2(int nPoint, int nx, int ny, const double** all_xaxis, const double** all_yaxis, const char* dir){
+	TCanvas *c = new TCanvas("parameters_vs_ch2","parameters_vs_ch2",1366,768);
+	c->SetTickx();
+	c->SetTicky();
+	c->Divide(nx,ny);
+
+	
+	// Affichage de SIN^2(θ_{13})
+	c->cd(1);
+	TGraphErrors g_tmp0;
+	fillGraphIgnoringNaN(g_tmp0,all_xaxis[0],all_yaxis[0],0,0,nPoint);
+	TGraphErrors *g0 = new TGraphErrors(g_tmp0);
+	g0->SetTitle(";SIN^{2}(#Theta_{13});#Delta #chi^{2}");
+	g0->SetMarkerStyle(1);
+	g0->SetLineColor(kRed);
+	g0->SetLineStyle(1);
+	g0->GetXaxis()->SetTitleSize(0.045);
+	g0->GetYaxis()->SetTitleSize(0.05);
+	g0->GetXaxis()->SetTickSize(0.02);
+	g0->GetYaxis()->SetTickSize(0.015);
+	g0->GetXaxis()->SetDecimals();
+	g0->Draw("APL"); c->Update();
+
+	
+	// Affichage de SIN^2(θ_{12})
+	c->cd(2);
+	TGraphErrors g_tmp1;
+	fillGraphIgnoringNaN(g_tmp1,all_xaxis[1],all_yaxis[1],0,0,nPoint);
+	TGraphErrors *g1 = new TGraphErrors(g_tmp1);
+	g1->SetTitle(";SIN^{2}(#Theta_{12});#Delta #chi^{2}");
+	g1->SetMarkerStyle(1);
+	g1->SetLineColor(kRed);
+	g1->SetLineStyle(1);
+	g1->GetXaxis()->SetTitleSize(0.045);
+	g1->GetYaxis()->SetTitleSize(0.05);
+	g1->GetXaxis()->SetTickSize(0.02);
+	g1->GetYaxis()->SetTickSize(0.015);
+	g1->GetXaxis()->SetDecimals();
+	g1->Draw("APL"); c->Update();
+
+	// Affichage de Δm^2_{21}
+	c->cd(3);
+	TGraphErrors g_tmp2;
+	fillGraphIgnoringNaN(g_tmp2,all_xaxis[2],all_yaxis[2],0,0,nPoint);
+	TGraphErrors *g2 = new TGraphErrors(g_tmp2);
+	g2->SetTitle(";#Delta m^{2}_{21};#Delta #chi^{2}");
+	g2->SetMarkerStyle(1);
+	g2->SetLineColor(kRed);
+	g2->SetLineStyle(1);
+	g2->GetXaxis()->SetTitleSize(0.045);
+	g2->GetYaxis()->SetTitleSize(0.05);
+	g2->GetXaxis()->SetTickSize(0.02);
+	g2->GetYaxis()->SetTickSize(0.015);
+	g2->GetXaxis()->SetDecimals();
+	g2->Draw("APL"); c->Update();
+
+	// Affichage de Δm^2_{31}
+	c->cd(4);
+	TGraphErrors g_tmp3;
+	fillGraphIgnoringNaN(g_tmp3,all_xaxis[3],all_yaxis[3],0,0,nPoint);
+	TGraphErrors *g3 = new TGraphErrors(g_tmp3);
+	g3->SetTitle(";#Delta m^{2}_{31};#Delta #chi^{2}");
+	g3->SetMarkerStyle(1);
+	g3->SetLineColor(kRed);
+	g3->SetLineStyle(1);
+	g3->GetXaxis()->SetTitleSize(0.045);
+	g3->GetYaxis()->SetTitleSize(0.05);
+	g3->GetXaxis()->SetTickSize(0.02);
+	g3->GetYaxis()->SetTickSize(0.015);
+	g3->GetXaxis()->SetDecimals();
+	g3->Draw("APL"); c->Update();
+
+
+	// Sauvegarde du fichier
+	c->Print(TString::Format("%schi2_variation.pdf",dir));
+	//c->Print(TString::Format("%svisible_energy_spectrum.png",dir));
+	c->Close();
+}
