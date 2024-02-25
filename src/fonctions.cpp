@@ -23,16 +23,6 @@ double fission_fraction_PU_239=0.30;//MeV
 double fission_fraction_PU_241=0.05;//MeV
 
 
-double sin2_teta_12=0.32;
-double sin2_2teta_13=0.1;   
-
-double teta_12=asin(sqrt(sin2_teta_12));
-double teta_13=asin(sqrt(sin2_2teta_13))/2;
-
-
-double delta2_m21=7.6e-5;
-double delta2_m32=2.4e-3;
-
 
 double flux_U_235(double E){
     double phi;

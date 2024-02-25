@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <plot.h>
 
  double trouverMinimum(const double tableau[], int taille) {
     double minimum = tableau[0]; // Supposons que le premier élément est le minimum initial
