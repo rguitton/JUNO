@@ -1,8 +1,11 @@
 #include "fonctions.h"
+#include "plotter.h"
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <cstdlib>
+#include <fstream>
 
  double trouverMinimum(const double tableau[], int taille) {
     double minimum = tableau[0]; // Supposons que le premier élément est le minimum initial
@@ -16,6 +19,10 @@
 
     return minimum;
     }
+
+using namespace std;
+
+const char* dir = "../output/";
 
 int main()
 {
@@ -33,6 +40,8 @@ int main()
     double tab_flux_cross_U_238[size];
     double tab_flux_cross_PU_239[size];
     double tab_flux_cross_PU_241[size];
+    double tab_flux_cross_total[size];
+
 
     double fission_fraction_U_235=0.58;//MeV
     double fission_fraction_U_238=0.07;//MeV
@@ -105,7 +114,7 @@ int main()
     //definition des tableaux énergie et longueur 
     for (int i=0;i<size;i++){
         tableau_lenght[i]=5+double(i)*28/size;
-        tableau_energy[i]=1+double(i)*10/size;
+        tableau_energy[i]=1.8+double(i)*7.2/size;
     }
     //on définit ensuite les tableaux associés à chaque 
      for (int i=0;i<size;i++){
@@ -122,110 +131,32 @@ int main()
 
         tab_cross[i]=sigma(tableau_energy[i]);
 
-        tab_flux_cross_U_235[i]=tab_cross[i]*tab_flux_U_235[i]*pow(10,2);
-        tab_flux_cross_U_238[i]=tab_cross[i]*tab_flux_U_238[i]*pow(10,2);
-        tab_flux_cross_PU_239[i]=tab_cross[i]*tab_flux_PU_239[i]*pow(10,2);
-        tab_flux_cross_PU_241[i]=tab_cross[i]*tab_flux_PU_241[i]*pow(10,2);
+        tab_flux_cross_U_235[i]=tab_cross[i]*tab_flux_U_235[i];
+        tab_flux_cross_U_238[i]=tab_cross[i]*tab_flux_U_238[i];
+        tab_flux_cross_PU_239[i]=tab_cross[i]*tab_flux_PU_239[i];
+        tab_flux_cross_PU_241[i]=tab_cross[i]*tab_flux_PU_241[i];
+        tab_flux_cross_total[i]= tab_flux_cross_U_235[i] + tab_flux_cross_U_238[i] + tab_flux_cross_PU_239[i] + tab_flux_cross_PU_241[i];
+        tab_flux_cross_total[i]=tab_flux_cross_total[i]*20; //arbitrary unit (we just wan to plot the shape)
 
     }
 
     //On reproduit la figure 2.4 de l'article [1] 
-   FILE *gnuplotPipe1 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe1 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
-    fprintf(gnuplotPipe1,"set title 'reactor antineutrino flux for different neutrino MHs'\n");
-    fprintf(gnuplotPipe1, "set xlabel 'L/E(km/MeV)'\n");
-    fprintf(gnuplotPipe1, "set ylabel 'Arbitrary unit'\n");
-    fprintf(gnuplotPipe1, "plot '-' with points title 'Non oscillation', '-' with points title 'theta_21', '-' with points title 'NH', '-' with points title 'IH'\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe1, "%g %g\n", tableau_lenght[i], spectra_initial[i]);
-    }
-    fprintf(gnuplotPipe1, "e\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe1, "%g %g\n", tableau_lenght[i], spectra_p21[i]);
-    }
-    fprintf(gnuplotPipe1, "e\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe1, "%g %g\n", tableau_lenght[i], spectra_NH[i]);
-    }
-    fprintf(gnuplotPipe1, "e\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe1, "%g %g\n", tableau_lenght[i], spectra_IH[i]);
-    }
-    fprintf(gnuplotPipe1, "e\n");
-        
-    fflush(gnuplotPipe1);
+    const double* all_yaxis1[4]={spectra_initial,spectra_p21,spectra_NH,spectra_IH};
+    plotter_spectra(size,tableau_lenght,all_yaxis1,dir);
 
     //On reproduit la figure 2.6 de l'article [1]
-
-    FILE *gnuplotPipe2 = popen("gnuplot -persist", "w");
-    if (gnuplotPipe2 == NULL) {
-        fprintf(stderr, "Erreur lors de l'ouverture de Gnuplot.\n");
-        return 1;
-    }
-    
-    fprintf(gnuplotPipe2, "set multiplot layout 2, 1\n");
-    fprintf(gnuplotPipe2, "set title 'Flux et spectre d émission'\n");
-    fprintf(gnuplotPipe2, "set xlabel 'antineutrino energy'\n");
-    fprintf(gnuplotPipe2, "set xrange [0:9]\n");
-
-    fprintf(gnuplotPipe2, "set ylabel 'Number of antineutrino (MeV^-1.fission^-1)'\n");
-    fprintf(gnuplotPipe2, "set ytics nomirror\n");
-    fprintf(gnuplotPipe2, "set yrange [0:0.9]\n");
-
-    fprintf(gnuplotPipe2, "set y2label 'Cross section(cm^-2)'\n");
-    fprintf(gnuplotPipe2, "set y2tics nomirror\n");
-    fprintf(gnuplotPipe2, "set y2range [0:5e-42]\n");
-    
-    fprintf(gnuplotPipe2, "plot '-' with points lt 3 title 'flux U 235', '-' with points lt 4 title 'flux U 238', '-' with points lt 1 title 'flux PU 239', '-' with points lt 2 title 'flux PU 241', '-' with points axes x1y2 title 'cross section','-' with points axes x1y2 lt 4 title 'U238 product'\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_U_235[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_U_238[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_PU_239[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_PU_241[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-    
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_cross[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
-
-    for (int i = 0; i < size; i++) {
-        fprintf(gnuplotPipe2, "%g %g\n",tableau_energy[i], tab_flux_cross_U_238[i]);
-    }
-    fprintf(gnuplotPipe2, "e\n");
+    const double* all_yaxis2[6]={tab_flux_U_235,tab_flux_U_238,tab_flux_PU_239,tab_flux_PU_241,tab_cross,tab_flux_cross_total};
+    plotter_flux(size, tableau_energy, all_yaxis2, dir);
 
     //on traces les données de l'article récuperées graphiquement pour pouvoir les comparer
 
-    fprintf(gnuplotPipe2, "set title 'Donnée de l article'\n");
-    fprintf(gnuplotPipe2, "set datafile separator ','\n plot '../data/fig_2_6.txt' using 1:2 with points axes x1y1 title 'U235', '' using 3:4 with points axes x1y1 title 'Pu239', '' using 5:6 with points axes x1y1 title 'U238', '' using 7:8 with points axes x1y1 title 'Pu241'\n");
+        //fprintf(gnuplotPipe2, "set title 'Donnée de l article'\n");
+        //fprintf(gnuplotPipe2, "set datafile separator ','\n plot '../data/fig_2_6.txt' using 1:2 with points axes x1y1 title 'U235', '' using 3:4 with points axes x1y1 title 'Pu239', '' using 5:6 with points axes x1y1 title 'U238', '' using 7:8 with points axes x1y1 title 'Pu241'\n");
 
-    fprintf(gnuplotPipe2, "unset multiplot\n");
-    fflush(gnuplotPipe2);
+        //fprintf(gnuplotPipe2, "unset multiplot\n");
+        //fflush(gnuplotPipe2);
 
 
-    
     //On veut obtenir le spectre des neutrinos détectés en fonction de leur énergie réelle sans prendre en compte l'incertitude sur l'énergie visible
 
     double flux_per_fission[size];
@@ -581,8 +512,7 @@ for(int w=1;w<50;w++){//boucle sur la distance
     getchar();
 
     // Fermeture du pipe Gnuplot
-    fclose(gnuplotPipe1);
-    fclose(gnuplotPipe2);
+
     fclose(gnuplotPipe3);
     fclose(gnuplotPipe4);
     fclose(gnuplotPipe5);

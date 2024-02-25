@@ -1,20 +1,24 @@
-
-# Consider dependencies only in project.
-set(CMAKE_DEPENDS_IN_PROJECT_ONLY OFF)
-
 # The set of languages for which implicit dependencies are needed:
-set(CMAKE_DEPENDS_LANGUAGES
+SET(CMAKE_DEPENDS_LANGUAGES
+  "CXX"
   )
-
-# The set of dependency files which are needed:
-set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/mnt/c/Users/Ordinateur/Desktop/TIPP/JUNO/src/fonctions.cpp" "CMakeFiles/monExe.dir/src/fonctions.cpp.o" "gcc" "CMakeFiles/monExe.dir/src/fonctions.cpp.o.d"
-  "/mnt/c/Users/Ordinateur/Desktop/TIPP/JUNO/src/main.cpp" "CMakeFiles/monExe.dir/src/main.cpp.o" "gcc" "CMakeFiles/monExe.dir/src/main.cpp.o.d"
+# The set of files for implicit dependencies of each language:
+SET(CMAKE_DEPENDS_CHECK_CXX
+  "/home/ftouchte/TIPP/JUNO/src/fonctions.cpp" "/home/ftouchte/TIPP/JUNO/build/CMakeFiles/monExe.dir/src/fonctions.cpp.o"
+  "/home/ftouchte/TIPP/JUNO/src/main.cpp" "/home/ftouchte/TIPP/JUNO/build/CMakeFiles/monExe.dir/src/main.cpp.o"
+  "/home/ftouchte/TIPP/JUNO/src/plotter.cpp" "/home/ftouchte/TIPP/JUNO/build/CMakeFiles/monExe.dir/src/plotter.cpp.o"
   )
+SET(CMAKE_CXX_COMPILER_ID "GNU")
 
 # Targets to which this target links.
-set(CMAKE_TARGET_LINKED_INFO_FILES
+SET(CMAKE_TARGET_LINKED_INFO_FILES
   )
 
-# Fortran module output directory.
-set(CMAKE_Fortran_TARGET_MODULE_DIR "")
+# The include file search paths:
+SET(CMAKE_C_TARGET_INCLUDE_PATH
+  "../include"
+  "/scratch/jcerasol/miniforge3/envs/root_TP/include"
+  )
+SET(CMAKE_CXX_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})
+SET(CMAKE_Fortran_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})
+SET(CMAKE_ASM_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})

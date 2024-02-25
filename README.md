@@ -8,6 +8,8 @@
 	`ssh username@sbgli1.in2p3.fr`
 1.  Log to a specific environment
 	`ssh sbglmd[1..20]`
+1.  Launch the ROOT environment
+	`source /scratch/jcerasol/root_course/setup_root.sh`
 
 ## Clone a git repository
 1.  Create a new repository wherever you want, let's call it `TIPP` 
@@ -18,20 +20,6 @@
 	`git clone git@github.com:roronoarapha/JUNO.git`
 	- **N.B:** Maybe you will have to generate a ssh key, so do :
 	`ssh-keygen`
-
-## Choose a branch (facultatif)
-1.  To see all the available branches, do :
-`git branch -a`
-1. The branch name with a star is the current branch. Example :
-
-	> *main
-	remotes/origin/HEAD -> origin/main
-	remotes/origin/main
-	remotes/origin/model_sigma
-	remotes/origin/newfeature/rootgraph
-
-1. Got the remote branch in local. Example :
-`git checkout -b newfeature/rootgraph origin/newfeature/rootgraph`
 
 ## Check you got this arborescence (at the minimum)
 
@@ -48,14 +36,30 @@
   - output/
   - CMakeList.txt
 
+## Check the branch
+1. Go in **JUNO**, do `cd JUNO`
+1. To see all the available branches, do :
+`git branch -a`
+1. The branch name with a star is the current branch. Example :
+
+	> *main
+	remotes/origin/HEAD -> origin/main
+	remotes/origin/main
+	remotes/origin/model_sigma
+	remotes/origin/newfeature/rootgraph
+
+1. (optional, your already are on the main branch) Got a remote branch in local. Example :
+`git checkout -b newfeature/rootgraph origin/newfeature/rootgraph`
+
 ## Launch our code
-1.  Launch the ROOT environment
-	`source /scratch/jcerasol/root_course/setup_root.sh`
-1. You will be redirected in your `/home` directory. Got back the `TIPP/JUNO` folder
+
+1. Be sure you are in the **JUNO** folder
 1. Go in the folder `build`
 1. For a first use, trash its contain
 	`rm -r *`
 	- **N.B** Do not use this command line without thinking n times about what you want to do
+1. From here, you can also trash the **output** folder, do
+   `rm ../output/*`
 1. Generate a Makefile associated to the project with
 	`cmake ..`
 1. Excute the code with 
