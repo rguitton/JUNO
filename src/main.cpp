@@ -350,6 +350,8 @@ int main()
         tableau_longueur[i]=i*3e3; //on va de 0 à 150km par pas de 3km
     }
 
+printf("Veuillez patienter environ 4 minutes pour le dernier graph...\n");
+
 for(int w=1;w<50;w++){//boucle sur la distance
 
     for(int u=0;u<N;u++){
@@ -397,9 +399,9 @@ for(int w=1;w<50;w++){//boucle sur la distance
 
 }
 
+    
     plotter_ch2_Distance(50,tableau_longueur,tab_min,dir);
     // Attente de l'utilisateur avant de fermer la fenêtre Gnuplot
-    printf("Veuillez patienter environ 4 minutes pour le dernier graph...\n");
     
     return 0;
 }
