@@ -329,7 +329,7 @@ int main()
     //On peut ensuite tracer chacune des fonctions chi pour chaques paramètres 
 
     const double* tab_xaxis[4] ={T_sin2_teta_13_IH, T_sin2_teta_12, T_delta2_m21, T_delta2_m31_IH};
-    const double* tab_yaxis[4] ={chi_teta13, chi_teta12,chi_delta2_m21, chi_delta2_m31_IH};
+    const double* tab_yaxis[4] ={chi_teta13, chi_teta12*1000,chi_delta2_m21*1000, chi_delta2_m31_IH};
     plotter_chi2(N,2,2,tab_xaxis,tab_yaxis,dir);
 
     //On cherche ensuite à comparer la valeur de Δχ² en fonction de si l'on considère une certaine hierarchie de masse et si on en observe une autre:
